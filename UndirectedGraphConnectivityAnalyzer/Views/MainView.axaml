@@ -6,11 +6,22 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="UndirectedGraphConnectivityAnalyzer.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+		<vm:MainViewModel />
+	</Design.DataContext>
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<StackPanel>
+		<DockPanel>
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Header="_Файл">
+					<MenuItem Header="_Открыть ..." Command="{Binding OpenFileCommand}" CommandParameter="{Binding $parent[4]}"/>
+				</MenuItem>
+				<MenuItem Header="Настройки"></MenuItem>
+				<MenuItem Header="Справка"></MenuItem>
+			</Menu>
+			<Grid></Grid>
+		</DockPanel>
+	</StackPanel>
 </UserControl>
