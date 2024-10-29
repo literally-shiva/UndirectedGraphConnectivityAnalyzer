@@ -1,23 +1,30 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
+using UndirectedGraphConnectivityAnalyzer.Models;
 using UndirectedGraphConnectivityAnalyzer.Views;
 
 namespace UndirectedGraphConnectivityAnalyzer.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    public ReactiveCommand<MainView, Unit> LoadNodesCommand { get; }
+    public ReactiveCommand<MainView, Unit> LoadLinksCommand { get; }
+    public ObservableCollection<Node> Nodes { get; }
+    public ObservableCollection<Link> Links { get; }
+
     public MainViewModel()
     {
-        OpenFileCommand = ReactiveCommand.CreateFromTask<MainView>(OpenFile);
+        LoadNodesCommand = ReactiveCommand.CreateFromTask<MainView>(LoadNodes);
+        LoadLinksCommand = ReactiveCommand.CreateFromTask<MainView>(LoadLinks);
+        Nodes = new ObservableCollection<Node>();
+        Links = new ObservableCollection<Link>();
     }
-
-    public ReactiveCommand<MainView, Unit> OpenFileCommand { get; }
-
-    async Task OpenFile(MainView mainView)
+    async Task LoadNodes(MainView mainView)
     {
         var topLevel = TopLevel.GetTopLevel(mainView);
 
@@ -31,7 +38,54 @@ public class MainViewModel : ViewModelBase
         {
             await using var stream = await files[0].OpenReadAsync();
             using var streamReader = new StreamReader(stream);
-            var fileContent = await streamReader.ReadToEndAsync();
+            string? line;
+            int index = 1;
+
+            while ((line = await streamReader.ReadLineAsync()) != null)
+            {
+                Nodes.Add(new Node(index, line));
+                index++;
+            }
+        }
+    }
+    async Task LoadLinks(MainView mainView)
+    {
+        var topLevel = TopLevel.GetTopLevel(mainView);
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open Text File",
+            AllowMultiple = false
+        });
+
+        if (files.Count >= 1)
+        {
+            await using var stream = await files[0].OpenReadAsync();
+            using var streamReader = new StreamReader(stream);
+            string? line;
+            int index = 1;
+
+            while ((line = await streamReader.ReadLineAsync()) != null)
+            {
+                var linkString = line.Split("-");
+                Node leftNode = null, rightNode = null;
+
+                foreach (var node in Nodes)
+                {
+                    if (node.Name == linkString[0])
+                    {
+                        leftNode = node;
+                    }
+                    if (node.Name == linkString[1])
+                    {
+                        rightNode = node;
+                    }
+                }
+
+                Link tempLink = new Link(leftNode, rightNode, index);
+                Links.Add(tempLink);
+                index++;
+            }
         }
     }
 }

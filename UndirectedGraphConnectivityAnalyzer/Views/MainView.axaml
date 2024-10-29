@@ -15,13 +15,42 @@
 	<StackPanel>
 		<DockPanel>
 			<Menu DockPanel.Dock="Top">
-				<MenuItem Header="_Файл">
-					<MenuItem Header="_Открыть ..." Command="{Binding OpenFileCommand}" CommandParameter="{Binding $parent[4]}"/>
+				<MenuItem Header="_Данные">
+					<MenuItem Header="_Загрузить вершины" Command="{Binding LoadNodesCommand}" CommandParameter="{Binding $parent[4]}"/>
+					<MenuItem Header="_Загрузить ребра" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding $parent[4]}"/>
 				</MenuItem>
 				<MenuItem Header="Настройки"></MenuItem>
 				<MenuItem Header="Справка"></MenuItem>
 			</Menu>
-			<Grid></Grid>
+			<TabControl>
+				<TabItem Header="Объекты">
+					<Panel>
+						<DataGrid Margin="20" ItemsSource="{Binding Nodes}"
+								  IsReadOnly="True"
+								  GridLinesVisibility="All"
+								  BorderThickness="1" BorderBrush="Gray">
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="№" Binding="{Binding Id}" />
+								<DataGridTextColumn Header="Объект" Binding="{Binding Name}"/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</Panel>
+				</TabItem>
+				<TabItem Header="Связи">
+					<Panel>
+						<DataGrid Margin="20" ItemsSource="{Binding Links}"
+								  IsReadOnly="True"
+								  GridLinesVisibility="All"
+								  BorderThickness="1" BorderBrush="Gray">
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="№" Binding="{Binding Id}" />
+								<DataGridTextColumn Header="Начало" Binding="{Binding Nodes[0].Name}"/>
+								<DataGridTextColumn Header="Конец" Binding="{Binding Nodes[1].Name}"/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</Panel>
+				</TabItem>
+			</TabControl>
 		</DockPanel>
 	</StackPanel>
 </UserControl>
