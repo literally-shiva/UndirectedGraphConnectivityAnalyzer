@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using DynamicData;
 using ReactiveUI;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
@@ -14,15 +16,30 @@ public class MainViewModel : ViewModelBase
 {
     public ReactiveCommand<MainView, Unit> LoadNodesCommand { get; }
     public ReactiveCommand<MainView, Unit> LoadLinksCommand { get; }
+    public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
+    public ObservableCollection<Node> NodesWithComponents { get; }
 
     public MainViewModel()
     {
         LoadNodesCommand = ReactiveCommand.CreateFromTask<MainView>(LoadNodes);
         LoadLinksCommand = ReactiveCommand.CreateFromTask<MainView>(LoadLinks);
+        AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
+        NodesWithComponents = new ObservableCollection<Node>();
+    }
+    void AnalyzeConnectivity()
+    {
+        var components = Node.GetConnectedComponents(Nodes);
+        foreach (var component in components)
+        {
+            foreach (var node in component)
+            {
+                NodesWithComponents.Add(node);
+            }
+        }
     }
     async Task LoadNodes(MainView mainView)
     {
@@ -40,6 +57,9 @@ public class MainViewModel : ViewModelBase
             using var streamReader = new StreamReader(stream);
             string? line;
             int index = 1;
+
+            Links.Clear();
+            Nodes.Clear();
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
@@ -65,6 +85,8 @@ public class MainViewModel : ViewModelBase
             string? line;
             int index = 1;
 
+            Links.Clear();
+
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 var linkString = line.Split("-");
@@ -85,6 +107,16 @@ public class MainViewModel : ViewModelBase
                 Link tempLink = new Link(leftNode, rightNode, index);
                 Links.Add(tempLink);
                 index++;
+            }
+            for (var i = 0; i < Nodes.Count; i++)
+            {
+                for (var j = 0; j < Links.Count; j++)
+                {
+                    if (Nodes[i].Equals(Links[j].Nodes[0]) || Nodes[i].Equals(Links[j].Nodes[1]))
+                    {
+                        Nodes[i].AddLink(Links[j]);
+                    }
+                }
             }
         }
     }

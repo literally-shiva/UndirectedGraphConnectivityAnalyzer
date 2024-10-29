@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace UndirectedGraphConnectivityAnalyzer.Models
 {
@@ -7,12 +8,14 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
         public int Id { get; set; }
         public string Name { get; set; }
         List<Link> Links { get; set; }
-        int ConnectivityComponent { get; set; } = 0;
+        public int ConnectivityComponent { get; set; }
 
         public Node(int id, string name)
         {
             Id = id;
             Name = name;
+            Links = new List<Link>();
+            ConnectivityComponent = 0;
         }
 
         public void AddLink(Link link)
@@ -20,7 +23,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
             this.Links.Add(link);
         }
 
-        public static List<List<Node>> GetConnectedComponents(List<Node> nodes)
+        public static List<List<Node>> GetConnectedComponents(ObservableCollection<Node> nodes)
         {
             int connectivityComponent = 1;
             List<List<Node>> components = new List<List<Node>>();

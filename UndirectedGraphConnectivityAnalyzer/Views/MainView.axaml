@@ -16,10 +16,9 @@
 		<DockPanel>
 			<Menu DockPanel.Dock="Top">
 				<MenuItem Header="_Данные">
-					<MenuItem Header="_Загрузить вершины" Command="{Binding LoadNodesCommand}" CommandParameter="{Binding $parent[4]}"/>
-					<MenuItem Header="_Загрузить ребра" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding $parent[4]}"/>
+					<MenuItem Header="_Загрузить объекты" Command="{Binding LoadNodesCommand}" CommandParameter="{Binding $parent[4]}"/>
+					<MenuItem Header="_Загрузить связи" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding $parent[4]}"/>
 				</MenuItem>
-				<MenuItem Header="Настройки"></MenuItem>
 				<MenuItem Header="Справка"></MenuItem>
 			</Menu>
 			<TabControl>
@@ -49,6 +48,25 @@
 							</DataGrid.Columns>
 						</DataGrid>
 					</Panel>
+				</TabItem>
+				<TabItem Header="Компоненты связности">
+					<StackPanel>
+						<Panel>
+							<Button Margin="20 20 20 0" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>
+						</Panel>
+						<Panel>
+							<DataGrid Margin="20" ItemsSource="{Binding NodesWithComponents}"
+									  IsReadOnly="True"
+									  GridLinesVisibility="All"
+									  BorderThickness="1" BorderBrush="Gray">
+								<DataGrid.Columns>
+									<DataGridTextColumn Header="№" Binding="{Binding Id}" />
+									<DataGridTextColumn Header="Объект" Binding="{Binding Name}"/>
+									<DataGridTextColumn Header="Компонента связности" Binding="{Binding ConnectivityComponent}"/>
+								</DataGrid.Columns>
+							</DataGrid>
+						</Panel>
+					</StackPanel>
 				</TabItem>
 			</TabControl>
 		</DockPanel>
