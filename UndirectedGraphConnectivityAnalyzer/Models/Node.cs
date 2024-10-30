@@ -1,14 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using ReactiveUI;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace UndirectedGraphConnectivityAnalyzer.Models
 {
-    public class Node
+    public class Node : ReactiveObject
     {
+        private int connectivityComponent;
         public int Id { get; set; }
         public string Name { get; set; }
         List<Link> Links { get; set; }
-        public int ConnectivityComponent { get; set; }
+        public int ConnectivityComponent
+        {
+            get => connectivityComponent;
+            set => this.RaiseAndSetIfChanged(ref connectivityComponent, value);
+        }
 
         public Node(int id, string name)
         {
