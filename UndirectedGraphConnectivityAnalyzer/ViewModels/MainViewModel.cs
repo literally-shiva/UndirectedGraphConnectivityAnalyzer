@@ -1,8 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using DynamicData;
 using ReactiveUI;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
@@ -19,7 +17,6 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
-    public ObservableCollection<Node> NodesWithComponents { get; }
 
     public MainViewModel()
     {
@@ -28,18 +25,10 @@ public class MainViewModel : ViewModelBase
         AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
-        NodesWithComponents = new ObservableCollection<Node>();
     }
     void AnalyzeConnectivity()
     {
-        var components = Node.GetConnectedComponents(Nodes);
-        foreach (var component in components)
-        {
-            foreach (var node in component)
-            {
-                NodesWithComponents.Add(node);
-            }
-        }
+        Node.GetConnectedComponents(Nodes);
     }
     async Task LoadNodes(MainView mainView)
     {
