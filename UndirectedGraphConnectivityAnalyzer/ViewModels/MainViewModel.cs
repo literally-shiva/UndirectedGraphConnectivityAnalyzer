@@ -78,7 +78,7 @@ public class MainViewModel : ViewModelBase
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
-                var linkString = line.Split("-");
+                var linkString = line.Split("<->");
                 Node leftNode = null, rightNode = null;
 
                 foreach (var node in Nodes)
@@ -97,6 +97,7 @@ public class MainViewModel : ViewModelBase
                 Links.Add(tempLink);
                 index++;
             }
+
             for (var i = 0; i < Nodes.Count; i++)
             {
                 for (var j = 0; j < Links.Count; j++)

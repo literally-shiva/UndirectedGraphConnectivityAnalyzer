@@ -49,6 +49,7 @@
 								<DataGridTextColumn Header="№" Binding="{Binding Id}" />
 								<DataGridTextColumn Header="Начало" Binding="{Binding Nodes[0].Name}"/>
 								<DataGridTextColumn Header="Конец" Binding="{Binding Nodes[1].Name}"/>
+								<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
 							</DataGrid.Columns>
 						</DataGrid>
 					</Panel>

@@ -7,6 +7,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
     public class Node : ReactiveObject
     {
         private int connectivityComponent;
+
         public int Id { get; set; }
         public string Name { get; set; }
         List<Link> Links { get; set; }
@@ -49,14 +50,23 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         Node node = nodeQueue.Dequeue();
                         foreach (var link in node.Links)
                         {
+                            if (!visitedNodes.Contains(link.Nodes[0]))
+                            {
+                                link.Nodes[0].ConnectivityComponent = connectivityComponent;
+                                link.ConnectivityComponent = connectivityComponent;
+                                visitedNodes.Add(link.Nodes[0]);
+                                nodeQueue.Enqueue(link.Nodes[0]);
+                            }
                             if (!visitedNodes.Contains(link.Nodes[1]))
                             {
                                 link.Nodes[1].ConnectivityComponent = connectivityComponent;
+                                link.ConnectivityComponent = connectivityComponent;
                                 visitedNodes.Add(link.Nodes[1]);
                                 nodeQueue.Enqueue(link.Nodes[1]);
                             }
                         }
                     }
+
                     components.Add(visitedNodes);
                     connectivityComponent++;
                 }
