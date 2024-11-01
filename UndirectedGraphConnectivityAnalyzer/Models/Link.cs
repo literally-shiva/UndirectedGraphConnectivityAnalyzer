@@ -8,7 +8,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
         private int _connectivityComponent;
 
         public int Id { get; set; }
-        public Node[] Nodes { get; set; } = new Node[2];
+        public ObservableCollection<Node> Nodes { get; set; }
         public int ConnectivityComponent
         {
             get => _connectivityComponent;
@@ -17,10 +17,11 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
 
         public Link(Node nodeLeft, Node nodeRight, int id)
         {
+            ConnectivityComponent = 0;
+            Id = id;
+            Nodes = new ObservableCollection<Node>(new Node[2]);
             Nodes[0] = nodeLeft;
             Nodes[1] = nodeRight;
-            Id = id;
-            ConnectivityComponent = 0;
         }
 
         public static void BindLinks(ObservableCollection<Node> nodes, ObservableCollection<Link> links)
