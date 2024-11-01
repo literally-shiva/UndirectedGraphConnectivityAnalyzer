@@ -36,7 +36,7 @@ public class MainViewModel : ViewModelBase
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Open Text File",
+            Title = "Загрузка объектов",
             AllowMultiple = false
         });
 
@@ -47,7 +47,7 @@ public class MainViewModel : ViewModelBase
             string? line;
             int index = 1;
 
-            Links.Clear();
+            Link.UnbindLinks(Links);
             Nodes.Clear();
 
             while ((line = await streamReader.ReadLineAsync()) != null)
@@ -55,6 +55,9 @@ public class MainViewModel : ViewModelBase
                 Nodes.Add(new Node(index, line));
                 index++;
             }
+
+            Node.BindNodes(Nodes, Links);
+            Link.BindLinks(Nodes, Links);
         }
     }
     async Task LoadLinks(MainView mainView)
@@ -63,7 +66,7 @@ public class MainViewModel : ViewModelBase
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Open Text File",
+            Title = "Загрузка связей",
             AllowMultiple = false
         });
 
@@ -74,40 +77,18 @@ public class MainViewModel : ViewModelBase
             string? line;
             int index = 1;
 
+            Node.UnbindNodes(Nodes);
             Links.Clear();
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 var linkString = line.Split("<->");
-                Node leftNode = null, rightNode = null;
-
-                foreach (var node in Nodes)
-                {
-                    if (node.Name == linkString[0])
-                    {
-                        leftNode = node;
-                    }
-                    if (node.Name == linkString[1])
-                    {
-                        rightNode = node;
-                    }
-                }
-
-                Link tempLink = new Link(leftNode, rightNode, index);
-                Links.Add(tempLink);
+                Links.Add(new Link(new Node(0, linkString[0]), new Node(0, linkString[1]), index));
                 index++;
             }
 
-            for (var i = 0; i < Nodes.Count; i++)
-            {
-                for (var j = 0; j < Links.Count; j++)
-                {
-                    if (Nodes[i].Equals(Links[j].Nodes[0]) || Nodes[i].Equals(Links[j].Nodes[1]))
-                    {
-                        Nodes[i].AddLink(Links[j]);
-                    }
-                }
-            }
+            Node.BindNodes(Nodes, Links);
+            Link.BindLinks(Nodes, Links);
         }
     }
 }

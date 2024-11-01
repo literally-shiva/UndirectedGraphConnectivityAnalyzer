@@ -6,15 +6,15 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
 {
     public class Node : ReactiveObject
     {
-        private int connectivityComponent;
+        private int _connectivityComponent;
 
         public int Id { get; set; }
         public string Name { get; set; }
         List<Link> Links { get; set; }
         public int ConnectivityComponent
         {
-            get => connectivityComponent;
-            set => this.RaiseAndSetIfChanged(ref connectivityComponent, value);
+            get => _connectivityComponent;
+            set => this.RaiseAndSetIfChanged(ref _connectivityComponent, value);
         }
 
         public Node(int id, string name)
@@ -28,6 +28,30 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
         public void AddLink(Link link)
         {
             this.Links.Add(link);
+        }
+
+        public static void BindNodes(ObservableCollection<Node> nodes, ObservableCollection<Link> links)
+        {
+            for (var i = 0; i < nodes.Count; i++)
+            {
+                for (var j = 0; j < links.Count; j++)
+                {
+                    if (nodes[i].Name == links[j].Nodes[0].Name ||
+                        nodes[i].Name == links[j].Nodes[1].Name)
+                    {
+                        nodes[i].AddLink(links[j]);
+                    }
+                }
+            }
+        }
+
+        public static void UnbindNodes(ObservableCollection<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                node.Links.Clear();
+                node.ConnectivityComponent = 0;
+            }
         }
 
         public static List<List<Node>> GetConnectedComponents(ObservableCollection<Node> nodes)
