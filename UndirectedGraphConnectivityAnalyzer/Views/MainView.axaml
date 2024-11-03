@@ -13,7 +13,7 @@
 		<vm:MainViewModel />
 	</Design.DataContext>
 
-	<DockPanel Background="#282B30">
+	<DockPanel Background="#23272a">
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_Данные">
 				<MenuItem Header="Загрузить">
@@ -40,16 +40,16 @@
 			</MenuItem>
 		</Menu>
 		<Label DockPanel.Dock="Top" Margin="10" FontSize="20">Объекты и связи</Label>
-		<Button DockPanel.Dock="Top" Margin="20 20 20 0" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>
+		<Button DockPanel.Dock="Top" Margin="20 20 20 0" Background="#2c2f33" BorderBrush="Gray" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 			<DataGrid Margin="20" ItemsSource="{Binding Nodes} "
 					  IsReadOnly="True"
 					  GridLinesVisibility="All"
 					  BorderThickness="1" BorderBrush="Gray"
-					  Background="#282B30">
+					  Background="#2c2f33">
 				<DataGrid.Styles>
 					<Style Selector="DataGridColumnHeader">
-						<Setter Property="Background" Value="#282B30" />
+						<Setter Property="Background" Value="#282b30" />
 					</Style>
 				</DataGrid.Styles>
 				<DataGrid.Columns>
@@ -62,10 +62,10 @@
 					  IsReadOnly="True"
 					  GridLinesVisibility="All"
 					  BorderThickness="1" BorderBrush="Gray"
-					  Background="#282B30">
+					  Background="#2c2f33">
 				<DataGrid.Styles>
 					<Style Selector="DataGridColumnHeader">
-						<Setter Property="Background" Value="#282B30" />
+						<Setter Property="Background" Value="#282b30" />
 					</Style>
 				</DataGrid.Styles>
 				<DataGrid.Columns>

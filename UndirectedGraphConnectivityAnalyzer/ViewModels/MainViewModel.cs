@@ -2,6 +2,7 @@
 using Avalonia.Platform.Storage;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -101,17 +102,24 @@ public class MainViewModel : ViewModelBase
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 var linkString = line.Split("<->");
-                var leftNode = new Node(0, linkString[0].Trim());
-                var rightNode = new Node(0, linkString[1].Trim());
-                var tempLink = new Link(leftNode, rightNode, Links.Count + 1);
-
-                if (!Links.Any(link =>
-                    link.Nodes[0].Name == tempLink.Nodes[0].Name &&
-                    link.Nodes[1].Name == tempLink.Nodes[1].Name ||
-                    link.Nodes[0].Name == tempLink.Nodes[1].Name &&
-                    link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                try
                 {
-                    Links.Add(tempLink);
+                    var leftNode = new Node(0, linkString[0].Trim());
+                    var rightNode = new Node(0, linkString[1].Trim());
+                    var tempLink = new Link(leftNode, rightNode, Links.Count + 1);
+
+                    if (!Links.Any(link =>
+                        link.Nodes[0].Name == tempLink.Nodes[0].Name &&
+                        link.Nodes[1].Name == tempLink.Nodes[1].Name ||
+                        link.Nodes[0].Name == tempLink.Nodes[1].Name &&
+                        link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                    {
+                        Links.Add(tempLink);
+                    }
+                }
+                catch
+                {
+                    Debug.WriteLine("Не удалось прочитать связь из файла");
                 }
             }
 
@@ -171,17 +179,24 @@ public class MainViewModel : ViewModelBase
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 var linkString = line.Split("<->");
-                var leftNode = new Node(0, linkString[0].Trim());
-                var rightNode = new Node(0, linkString[1].Trim());
-                var tempLink = new Link(leftNode, rightNode, Links.Count + 1);
-
-                if (!Links.Any(link =>
-                    link.Nodes[0].Name == tempLink.Nodes[0].Name &&
-                    link.Nodes[1].Name == tempLink.Nodes[1].Name ||
-                    link.Nodes[0].Name == tempLink.Nodes[1].Name &&
-                    link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                try
                 {
-                    Links.Add(tempLink);
+                    var leftNode = new Node(0, linkString[0].Trim());
+                    var rightNode = new Node(0, linkString[1].Trim());
+                    var tempLink = new Link(leftNode, rightNode, Links.Count + 1);
+
+                    if (!Links.Any(link =>
+                        link.Nodes[0].Name == tempLink.Nodes[0].Name &&
+                        link.Nodes[1].Name == tempLink.Nodes[1].Name ||
+                        link.Nodes[0].Name == tempLink.Nodes[1].Name &&
+                        link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                    {
+                        Links.Add(tempLink);
+                    }
+                }
+                catch
+                {
+                    Debug.WriteLine("Не удалось прочитать связь из файла");
                 }
             }
 
