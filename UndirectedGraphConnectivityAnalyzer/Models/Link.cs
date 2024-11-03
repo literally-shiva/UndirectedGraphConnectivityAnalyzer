@@ -43,6 +43,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
             {
                 links[i].Nodes[0] = new Node(0, links[i].Nodes[0].Name);
                 links[i].Nodes[1] = new Node(0, links[i].Nodes[1].Name);
+                links[i].ConnectivityComponent = 0;
             }
         }
     }

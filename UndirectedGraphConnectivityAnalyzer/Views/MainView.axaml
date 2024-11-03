@@ -12,54 +12,60 @@
 		<vm:MainViewModel />
 	</Design.DataContext>
 
-	<StackPanel>
-		<DockPanel>
-			<Menu DockPanel.Dock="Top">
-				<MenuItem Header="_Данные">
-					<MenuItem Header="_Загрузить объекты" Command="{Binding LoadNodesCommand}" CommandParameter="{Binding $parent[4]}"/>
-					<MenuItem Header="_Загрузить связи" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding $parent[4]}"/>
-				</MenuItem>
-				<MenuItem Header="Справка"></MenuItem>
-			</Menu>
-			<Label DockPanel.Dock="Top" Margin="10" FontSize="20">Объекты и связи</Label>
-			<StackPanel>
-				<Panel>
-					<Button Margin="20 20 20 0" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>
-				</Panel>
-				<DockPanel>
-					<DataGrid Margin="20" DockPanel.Dock="Left" ItemsSource="{Binding Nodes}"
-							  IsReadOnly="True"
-							  GridLinesVisibility="All"
-							  BorderThickness="1" BorderBrush="Gray">
-						<DataGrid.Columns>
-							<DataGridTextColumn Header="№" Binding="{Binding Id}" />
-							<DataGridTextColumn Header="Объект" Binding="{Binding Name}"/>
-							<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
-						</DataGrid.Columns>
-					</DataGrid>
-					<DataGrid Margin="20" DockPanel.Dock="Left" ItemsSource="{Binding Links}"
-							  IsReadOnly="True"
-							  GridLinesVisibility="All"
-							  BorderThickness="1" BorderBrush="Gray">
-						<DataGrid.Columns>
-							<DataGridTextColumn Header="№" Binding="{Binding Id}" />
-							<DataGridTextColumn Header="Начало" Binding="{Binding Nodes[0].Name}"/>
-							<DataGridTextColumn Header="Конец" Binding="{Binding Nodes[1].Name}"/>
-							<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
-							<DataGridTextColumn Header="Начало" Binding="{Binding Nodes[0].Id}"/>
-							<DataGridTextColumn Header="Конец" Binding="{Binding Nodes[1].Id}"/>
-							<DataGridTextColumn Header="Начало-Конец">
-								<DataGridTextColumn.Binding>
-									<MultiBinding StringFormat="{}{0}-{1}">
-										<Binding Path="Nodes[0].Id"/>
-										<Binding Path="Nodes[1].Id"/>
-									</MultiBinding>
-								</DataGridTextColumn.Binding>
-							</DataGridTextColumn>
-						</DataGrid.Columns>
-					</DataGrid>
-				</DockPanel>
-			</StackPanel>
-		</DockPanel>
-	</StackPanel>
+	<DockPanel Background="#282B30">
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_Данные">
+				<MenuItem Header="_Загрузить объекты" Command="{Binding LoadNodesCommand}" CommandParameter="{Binding $parent[3]}"/>
+				<MenuItem Header="_Загрузить связи" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding $parent[3]}"/>
+			</MenuItem>
+			<MenuItem Header="Справка"></MenuItem>
+		</Menu>
+		<Label DockPanel.Dock="Top" Margin="10" FontSize="20">Объекты и связи</Label>
+		<Button DockPanel.Dock="Top" Margin="20 20 20 0" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>
+		<Grid ColumnDefinitions="*, *">
+			<DataGrid Grid.Column="0" ColumnWidth="Auto" Margin="20" ItemsSource="{Binding Nodes}"
+					  IsReadOnly="True"
+					  GridLinesVisibility="All"
+					  BorderThickness="1" BorderBrush="Gray"
+					  Background="#282B30">
+				<DataGrid.Styles>
+					<Style Selector="DataGridColumnHeader">
+						<Setter Property="Background" Value="#282B30" />
+					</Style>
+				</DataGrid.Styles>
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="№" Binding="{Binding Id}"/>
+					<DataGridTextColumn Header="Объект" Width="*" MinWidth="0" Binding="{Binding Name}"/>
+					<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
+				</DataGrid.Columns>
+			</DataGrid>
+			<DataGrid Grid.Column="1" ColumnWidth="Auto" Margin="20" ItemsSource="{Binding Links}"
+					  IsReadOnly="True"
+					  GridLinesVisibility="All"
+					  BorderThickness="1" BorderBrush="Gray"
+					  Background="#282B30">
+				<DataGrid.Styles>
+					<Style Selector="DataGridColumnHeader">
+						<Setter Property="Background" Value="#282B30" />
+					</Style>
+				</DataGrid.Styles>
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="№" Binding="{Binding Id}"/>
+					<DataGridTextColumn Header="Начало" Width="*" MinWidth="100" Binding="{Binding Nodes[0].Name}"/>
+					<DataGridTextColumn Header="Конец" Width="*" MinWidth="100" Binding="{Binding Nodes[1].Name}"/>
+					<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
+					<DataGridTextColumn Header="Начало" Binding="{Binding Nodes[0].Id}"/>
+					<DataGridTextColumn Header="Конец" Binding="{Binding Nodes[1].Id}"/>
+					<DataGridTextColumn Header="Начало-Конец">
+						<DataGridTextColumn.Binding>
+							<MultiBinding StringFormat="{}{0}-{1}">
+								<Binding Path="Nodes[0].Id"/>
+								<Binding Path="Nodes[1].Id"/>
+							</MultiBinding>
+						</DataGridTextColumn.Binding>
+					</DataGridTextColumn>
+				</DataGrid.Columns>
+			</DataGrid>
+		</Grid>
+	</DockPanel>
 </UserControl>
