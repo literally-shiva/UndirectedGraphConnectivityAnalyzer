@@ -3,6 +3,7 @@ using Avalonia.Platform.Storage;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using UndirectedGraphConnectivityAnalyzer.Models;
@@ -37,7 +38,8 @@ public class MainViewModel : ViewModelBase
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Загрузка объектов",
-            AllowMultiple = false
+            AllowMultiple = false,
+            FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
         });
 
         if (files.Count >= 1)
@@ -52,8 +54,13 @@ public class MainViewModel : ViewModelBase
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
-                Nodes.Add(new Node(index, line));
-                index++;
+                var tempNode = new Node(index, line);
+
+                if (!Nodes.Any(node => node.Name == tempNode.Name))
+                {
+                    Nodes.Add(tempNode);
+                    index++;
+                }
             }
 
             Node.BindNodes(Nodes, Links);
@@ -67,7 +74,8 @@ public class MainViewModel : ViewModelBase
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Загрузка связей",
-            AllowMultiple = false
+            AllowMultiple = false,
+            FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
         });
 
         if (files.Count >= 1)
@@ -83,8 +91,19 @@ public class MainViewModel : ViewModelBase
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 var linkString = line.Split("<->");
-                Links.Add(new Link(new Node(0, linkString[0]), new Node(0, linkString[1]), index));
-                index++;
+                var leftNode = new Node(0, linkString[0]);
+                var rightNode = new Node(0, linkString[1]);
+                var tempLink = new Link(leftNode, rightNode, index);
+
+                if (!Links.Any(link =>
+                    link.Nodes[0].Name == tempLink.Nodes[0].Name &&
+                    link.Nodes[1].Name == tempLink.Nodes[1].Name ||
+                    link.Nodes[0].Name == tempLink.Nodes[1].Name &&
+                    link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                {
+                    Links.Add(tempLink);
+                    index++;
+                }
             }
 
             Node.BindNodes(Nodes, Links);

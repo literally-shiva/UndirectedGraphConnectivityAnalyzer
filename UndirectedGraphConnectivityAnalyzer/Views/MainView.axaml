@@ -5,7 +5,8 @@
              xmlns:vm="clr-namespace:UndirectedGraphConnectivityAnalyzer.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="UndirectedGraphConnectivityAnalyzer.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+			 Name="UserControl">
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -15,15 +16,32 @@
 	<DockPanel Background="#282B30">
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_Данные">
-				<MenuItem Header="_Загрузить объекты" Command="{Binding LoadNodesCommand}" CommandParameter="{Binding $parent[3]}"/>
-				<MenuItem Header="_Загрузить связи" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding $parent[3]}"/>
+				<MenuItem Header="Загрузить">
+					<MenuItem Header="Загрузить объекты из файла" Command="{Binding LoadNodesCommand}" CommandParameter="{Binding #UserControl}"/>
+					<MenuItem Header="Загрузить связи из файла" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding #UserControl}"/>
+				</MenuItem>
+				<MenuItem Header="Добавить">
+					<MenuItem Header="Добавить объекты из файла"/>
+					<MenuItem Header="Добавить связи из файла"/>
+				</MenuItem>
+				<MenuItem Header="Создать">
+					<MenuItem Header="Создать объект"/>
+					<MenuItem Header="Создать связь"/>
+				</MenuItem>
+				<MenuItem Header="Очистить">
+					<MenuItem Header="Очистить объекты"/>
+					<MenuItem Header="Очистить связи"/>
+				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="Справка"></MenuItem>
+			<MenuItem Header="Отчёт"/>
+			<MenuItem Header="Справка">
+				<MenuItem Header="Об авторе"/>
+			</MenuItem>
 		</Menu>
 		<Label DockPanel.Dock="Top" Margin="10" FontSize="20">Объекты и связи</Label>
 		<Button DockPanel.Dock="Top" Margin="20 20 20 0" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>
-		<Grid ColumnDefinitions="*, *">
-			<DataGrid Grid.Column="0" ColumnWidth="Auto" Margin="20" ItemsSource="{Binding Nodes}"
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+			<DataGrid Margin="20" ItemsSource="{Binding Nodes} "
 					  IsReadOnly="True"
 					  GridLinesVisibility="All"
 					  BorderThickness="1" BorderBrush="Gray"
@@ -35,11 +53,11 @@
 				</DataGrid.Styles>
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="№" Binding="{Binding Id}"/>
-					<DataGridTextColumn Header="Объект" Width="*" MinWidth="0" Binding="{Binding Name}"/>
+					<DataGridTextColumn Header="Объект" Binding="{Binding Name}"/>
 					<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
 				</DataGrid.Columns>
 			</DataGrid>
-			<DataGrid Grid.Column="1" ColumnWidth="Auto" Margin="20" ItemsSource="{Binding Links}"
+			<DataGrid Margin="20" ItemsSource="{Binding Links}"
 					  IsReadOnly="True"
 					  GridLinesVisibility="All"
 					  BorderThickness="1" BorderBrush="Gray"
@@ -51,9 +69,8 @@
 				</DataGrid.Styles>
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="№" Binding="{Binding Id}"/>
-					<DataGridTextColumn Header="Начало" Width="*" MinWidth="100" Binding="{Binding Nodes[0].Name}"/>
-					<DataGridTextColumn Header="Конец" Width="*" MinWidth="100" Binding="{Binding Nodes[1].Name}"/>
-					<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
+					<DataGridTextColumn Header="Начало" Binding="{Binding Nodes[0].Name}"/>
+					<DataGridTextColumn Header="Конец" Binding="{Binding Nodes[1].Name}"/>
 					<DataGridTextColumn Header="Начало" Binding="{Binding Nodes[0].Id}"/>
 					<DataGridTextColumn Header="Конец" Binding="{Binding Nodes[1].Id}"/>
 					<DataGridTextColumn Header="Начало-Конец">
@@ -64,8 +81,9 @@
 							</MultiBinding>
 						</DataGridTextColumn.Binding>
 					</DataGridTextColumn>
+					<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
 				</DataGrid.Columns>
 			</DataGrid>
-		</Grid>
+		</StackPanel>
 	</DockPanel>
 </UserControl>
