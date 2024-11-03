@@ -54,6 +54,7 @@ public class MainViewModel : ViewModelBase
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
+                line = line.Trim();
                 var tempNode = new Node(index, line);
 
                 if (!Nodes.Any(node => node.Name == tempNode.Name))
@@ -91,8 +92,8 @@ public class MainViewModel : ViewModelBase
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 var linkString = line.Split("<->");
-                var leftNode = new Node(0, linkString[0]);
-                var rightNode = new Node(0, linkString[1]);
+                var leftNode = new Node(0, linkString[0].Trim());
+                var rightNode = new Node(0, linkString[1].Trim());
                 var tempLink = new Link(leftNode, rightNode, index);
 
                 if (!Links.Any(link =>
