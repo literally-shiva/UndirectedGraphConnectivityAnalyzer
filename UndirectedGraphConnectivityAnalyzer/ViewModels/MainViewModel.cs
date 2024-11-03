@@ -15,6 +15,8 @@ public class MainViewModel : ViewModelBase
 {
     public ReactiveCommand<MainView, Unit> LoadNodesCommand { get; }
     public ReactiveCommand<MainView, Unit> LoadLinksCommand { get; }
+    public ReactiveCommand<MainView, Unit> AddNodesCommand { get; }
+    public ReactiveCommand<MainView, Unit> AddLinksCommand { get; }
     public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
@@ -23,6 +25,8 @@ public class MainViewModel : ViewModelBase
     {
         LoadNodesCommand = ReactiveCommand.CreateFromTask<MainView>(LoadNodes);
         LoadLinksCommand = ReactiveCommand.CreateFromTask<MainView>(LoadLinks);
+        AddNodesCommand = ReactiveCommand.CreateFromTask<MainView>(AddNodes);
+        AddLinksCommand = ReactiveCommand.CreateFromTask<MainView>(AddLinks);
         AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
@@ -47,7 +51,6 @@ public class MainViewModel : ViewModelBase
             await using var stream = await files[0].OpenReadAsync();
             using var streamReader = new StreamReader(stream);
             string? line;
-            int index = 1;
 
             Link.UnbindLinks(Links);
             Nodes.Clear();
@@ -55,12 +58,11 @@ public class MainViewModel : ViewModelBase
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 line = line.Trim();
-                var tempNode = new Node(index, line);
+                var tempNode = new Node(Nodes.Count + 1, line);
 
                 if (!Nodes.Any(node => node.Name == tempNode.Name))
                 {
                     Nodes.Add(tempNode);
-                    index++;
                 }
             }
 
@@ -84,7 +86,6 @@ public class MainViewModel : ViewModelBase
             await using var stream = await files[0].OpenReadAsync();
             using var streamReader = new StreamReader(stream);
             string? line;
-            int index = 1;
 
             Node.UnbindNodes(Nodes);
             Links.Clear();
@@ -94,7 +95,7 @@ public class MainViewModel : ViewModelBase
                 var linkString = line.Split("<->");
                 var leftNode = new Node(0, linkString[0].Trim());
                 var rightNode = new Node(0, linkString[1].Trim());
-                var tempLink = new Link(leftNode, rightNode, index);
+                var tempLink = new Link(leftNode, rightNode, Links.Count + 1);
 
                 if (!Links.Any(link =>
                     link.Nodes[0].Name == tempLink.Nodes[0].Name &&
@@ -103,7 +104,76 @@ public class MainViewModel : ViewModelBase
                     link.Nodes[1].Name == tempLink.Nodes[0].Name))
                 {
                     Links.Add(tempLink);
-                    index++;
+                }
+            }
+
+            Node.BindNodes(Nodes, Links);
+            Link.BindLinks(Nodes, Links);
+        }
+    }
+    async Task AddNodes(MainView mainView)
+    {
+        var topLevel = TopLevel.GetTopLevel(mainView);
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Добавление объектов",
+            AllowMultiple = false,
+            FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
+        });
+
+        if (files.Count >= 1)
+        {
+            await using var stream = await files[0].OpenReadAsync();
+            using var streamReader = new StreamReader(stream);
+            string? line;
+
+            while ((line = await streamReader.ReadLineAsync()) != null)
+            {
+                line = line.Trim();
+                var tempNode = new Node(Nodes.Count + 1, line);
+
+                if (!Nodes.Any(node => node.Name == tempNode.Name))
+                {
+                    Nodes.Add(tempNode);
+                }
+            }
+
+            Node.BindNodes(Nodes, Links);
+            Link.BindLinks(Nodes, Links);
+        }
+    }
+    async Task AddLinks(MainView mainView)
+    {
+        var topLevel = TopLevel.GetTopLevel(mainView);
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Добавление связей",
+            AllowMultiple = false,
+            FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
+        });
+
+        if (files.Count >= 1)
+        {
+            await using var stream = await files[0].OpenReadAsync();
+            using var streamReader = new StreamReader(stream);
+            string? line;
+
+            while ((line = await streamReader.ReadLineAsync()) != null)
+            {
+                var linkString = line.Split("<->");
+                var leftNode = new Node(0, linkString[0].Trim());
+                var rightNode = new Node(0, linkString[1].Trim());
+                var tempLink = new Link(leftNode, rightNode, Links.Count + 1);
+
+                if (!Links.Any(link =>
+                    link.Nodes[0].Name == tempLink.Nodes[0].Name &&
+                    link.Nodes[1].Name == tempLink.Nodes[1].Name ||
+                    link.Nodes[0].Name == tempLink.Nodes[1].Name &&
+                    link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                {
+                    Links.Add(tempLink);
                 }
             }
 

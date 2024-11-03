@@ -21,8 +21,8 @@
 					<MenuItem Header="Загрузить связи из файла" Command="{Binding LoadLinksCommand}" CommandParameter="{Binding #UserControl}"/>
 				</MenuItem>
 				<MenuItem Header="Добавить">
-					<MenuItem Header="Добавить объекты из файла"/>
-					<MenuItem Header="Добавить связи из файла"/>
+					<MenuItem Header="Добавить объекты из файла" Command="{Binding AddNodesCommand}" CommandParameter="{Binding #UserControl}"/>
+					<MenuItem Header="Добавить связи из файла" Command="{Binding AddLinksCommand}" CommandParameter="{Binding #UserControl}"/>
 				</MenuItem>
 				<MenuItem Header="Создать">
 					<MenuItem Header="Создать объект"/>
