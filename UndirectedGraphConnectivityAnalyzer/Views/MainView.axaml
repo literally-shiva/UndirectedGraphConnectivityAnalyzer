@@ -29,8 +29,9 @@
 					<MenuItem Header="Создать связь"/>
 				</MenuItem>
 				<MenuItem Header="Очистить">
-					<MenuItem Header="Очистить объекты"/>
-					<MenuItem Header="Очистить связи"/>
+					<MenuItem Header="Очистить объекты" Command="{Binding ClearNodesCommand}"/>
+					<MenuItem Header="Очистить связи" Command="{Binding ClearLinksCommand}"/>
+					<MenuItem Header="Очистить объекты и связи" Command="{Binding ClearNodesAndLinksCommand}"/>
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="Отчёт"/>

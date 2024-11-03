@@ -17,6 +17,9 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<MainView, Unit> LoadLinksCommand { get; }
     public ReactiveCommand<MainView, Unit> AddNodesCommand { get; }
     public ReactiveCommand<MainView, Unit> AddLinksCommand { get; }
+    public ReactiveCommand<Unit, Unit> ClearNodesCommand { get; }
+    public ReactiveCommand<Unit, Unit> ClearLinksCommand { get; }
+    public CombinedReactiveCommand<Unit, Unit> ClearNodesAndLinksCommand { get; }
     public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
@@ -27,14 +30,19 @@ public class MainViewModel : ViewModelBase
         LoadLinksCommand = ReactiveCommand.CreateFromTask<MainView>(LoadLinks);
         AddNodesCommand = ReactiveCommand.CreateFromTask<MainView>(AddNodes);
         AddLinksCommand = ReactiveCommand.CreateFromTask<MainView>(AddLinks);
+        ClearNodesCommand = ReactiveCommand.Create(ClearNodes);
+        ClearLinksCommand = ReactiveCommand.Create(ClearLinks);
+        ClearNodesAndLinksCommand = ReactiveCommand.CreateCombined(new ReactiveCommand<Unit, Unit>[] { ClearNodesCommand, ClearLinksCommand });
         AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
     }
+
     void AnalyzeConnectivity()
     {
         Node.GetConnectedComponents(Nodes);
     }
+
     async Task LoadNodes(MainView mainView)
     {
         var topLevel = TopLevel.GetTopLevel(mainView);
@@ -180,5 +188,15 @@ public class MainViewModel : ViewModelBase
             Node.BindNodes(Nodes, Links);
             Link.BindLinks(Nodes, Links);
         }
+    }
+    void ClearNodes()
+    {
+        Link.UnbindLinks(Links);
+        Nodes.Clear();
+    }
+    void ClearLinks()
+    {
+        Node.UnbindNodes(Nodes);
+        Links.Clear();
     }
 }
