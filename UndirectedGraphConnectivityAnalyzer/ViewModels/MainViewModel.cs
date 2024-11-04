@@ -22,6 +22,7 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> ClearLinksCommand { get; }
     public CombinedReactiveCommand<Unit, Unit> ClearNodesAndLinksCommand { get; }
     public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
+    public ReactiveCommand<MainView, Unit> SaveDataCommand { get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
 
@@ -35,6 +36,7 @@ public class MainViewModel : ViewModelBase
         ClearLinksCommand = ReactiveCommand.Create(ClearLinks);
         ClearNodesAndLinksCommand = ReactiveCommand.CreateCombined(new ReactiveCommand<Unit, Unit>[] { ClearNodesCommand, ClearLinksCommand });
         AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
+        SaveDataCommand = ReactiveCommand.CreateFromTask<MainView>(SaveData);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
     }
@@ -213,5 +215,36 @@ public class MainViewModel : ViewModelBase
     {
         Node.UnbindNodes(Nodes);
         Links.Clear();
+    }
+    async Task SaveData(MainView mainView)
+    {
+        var topLevel = TopLevel.GetTopLevel(mainView);
+
+        var dir = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Сохранение данных",
+            DefaultExtension = ".txt",
+            SuggestedFileName = "Отчёт анализа связности",
+            FileTypeChoices = [FilePickerFileTypes.TextPlain],
+            ShowOverwritePrompt = true
+        });
+
+        if (dir != null)
+        {
+            await using var stream = await dir.OpenWriteAsync();
+            using var streamWriter = new StreamWriter(stream);
+
+            await streamWriter.WriteLineAsync("Объекты и их компоненты связности:");
+            foreach (var node in Nodes)
+            {
+                await streamWriter.WriteLineAsync($"{node.Name} : {node.ConnectivityComponent}");
+            }
+
+            await streamWriter.WriteLineAsync("\nСвязи и их компоненты связности:");
+            foreach (var link in Links)
+            {
+                await streamWriter.WriteLineAsync($"{link.Nodes[0].Name}<->{link.Nodes[1].Name} : {link.ConnectivityComponent}");
+            }
+        }
     }
 }

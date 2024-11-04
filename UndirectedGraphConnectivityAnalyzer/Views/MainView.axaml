@@ -34,7 +34,9 @@
 					<MenuItem Header="Очистить объекты и связи" Command="{Binding ClearNodesAndLinksCommand}"/>
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="Отчёт"/>
+			<MenuItem Header="Отчёт">
+				<MenuItem Header="Сохранить данные в файл" Command="{Binding SaveDataCommand}" CommandParameter="{Binding #UserControl}"/>
+			</MenuItem>
 			<MenuItem Header="Справка">
 				<MenuItem Header="Об авторе"/>
 			</MenuItem>
