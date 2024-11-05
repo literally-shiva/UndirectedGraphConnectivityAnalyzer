@@ -10,5 +10,5 @@
         Title="Анализатор связности неориентированного графа"
 		Width="1024"
 		Height="576">
-        <views:MainView />
+	<views:MainView />
 </Window>

@@ -1,5 +1,7 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -23,6 +25,7 @@ public class MainViewModel : ViewModelBase
     public CombinedReactiveCommand<Unit, Unit> ClearNodesAndLinksCommand { get; }
     public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
     public ReactiveCommand<MainView, Unit> SaveDataCommand { get; }
+    public ReactiveCommand<MainView, Unit> CreateNodeCommand {  get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
 
@@ -37,6 +40,7 @@ public class MainViewModel : ViewModelBase
         ClearNodesAndLinksCommand = ReactiveCommand.CreateCombined(new ReactiveCommand<Unit, Unit>[] { ClearNodesCommand, ClearLinksCommand });
         AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
         SaveDataCommand = ReactiveCommand.CreateFromTask<MainView>(SaveData);
+        CreateNodeCommand = ReactiveCommand.CreateFromTask<MainView>(CreateNode);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
     }
@@ -246,5 +250,11 @@ public class MainViewModel : ViewModelBase
                 await streamWriter.WriteLineAsync($"{link.Nodes[0].Name}<->{link.Nodes[1].Name} : {link.ConnectivityComponent}");
             }
         }
+    }
+    public async Task CreateNode(MainView mainView)
+    {
+        var ownerWindow = mainView.GetVisualRoot();
+        var window = new CreateNodeWindow();
+        window.ShowDialog((Window)ownerWindow);
     }
 }

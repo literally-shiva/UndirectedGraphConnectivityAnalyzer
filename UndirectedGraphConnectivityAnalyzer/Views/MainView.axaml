@@ -25,7 +25,7 @@
 					<MenuItem Header="Добавить связи из файла" Command="{Binding AddLinksCommand}" CommandParameter="{Binding #UserControl}"/>
 				</MenuItem>
 				<MenuItem Header="Создать">
-					<MenuItem Header="Создать объект"/>
+					<MenuItem Header="Создать объект" Command="{Binding CreateNodeCommand}" CommandParameter="{Binding #UserControl}"/>
 					<MenuItem Header="Создать связь"/>
 				</MenuItem>
 				<MenuItem Header="Очистить">
