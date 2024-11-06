@@ -1,5 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ReactiveUI;
@@ -60,7 +59,7 @@ public class MainViewModel : ViewModelBase
             AllowMultiple = false,
             FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
         });
-
+        // Возможно, в соответствии с MVVM, правильнее вынести эту логику в отдельный класс вроде "FileService"
         if (files.Count >= 1)
         {
             await using var stream = await files[0].OpenReadAsync();
@@ -95,7 +94,7 @@ public class MainViewModel : ViewModelBase
             AllowMultiple = false,
             FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
         });
-
+        // Возможно, в соответствии с MVVM, правильнее вынести эту логику в отдельный класс вроде "FileService"
         if (files.Count >= 1)
         {
             await using var stream = await files[0].OpenReadAsync();
@@ -143,7 +142,7 @@ public class MainViewModel : ViewModelBase
             AllowMultiple = false,
             FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
         });
-
+        // Возможно, в соответствии с MVVM, правильнее вынести эту логику в отдельный класс вроде "FileService"
         if (files.Count >= 1)
         {
             await using var stream = await files[0].OpenReadAsync();
@@ -175,7 +174,7 @@ public class MainViewModel : ViewModelBase
             AllowMultiple = false,
             FileTypeFilter = new[] { FilePickerFileTypes.TextPlain }
         });
-
+        // Возможно, в соответствии с MVVM, правильнее вынести эту логику в отдельный класс вроде "FileService"
         if (files.Count >= 1)
         {
             await using var stream = await files[0].OpenReadAsync();
@@ -232,7 +231,7 @@ public class MainViewModel : ViewModelBase
             FileTypeChoices = [FilePickerFileTypes.TextPlain],
             ShowOverwritePrompt = true
         });
-
+        // Возможно, в соответствии с MVVM, правильнее вынести эту логику в отдельный класс вроде "FileService"
         if (dir != null)
         {
             await using var stream = await dir.OpenWriteAsync();
@@ -254,7 +253,8 @@ public class MainViewModel : ViewModelBase
     public async Task CreateNode(MainView mainView)
     {
         var ownerWindow = mainView.GetVisualRoot();
-        var window = new CreateNodeWindow();
-        window.ShowDialog((Window)ownerWindow);
+        var window = new CreateNodeWindow() { DataContext = new CreateNodeViewModel() };
+        var nodeName = await window.ShowDialog<string>((Window)ownerWindow);
+        Nodes.Add(new Node(Nodes.Count + 1, nodeName));
     }
 }
