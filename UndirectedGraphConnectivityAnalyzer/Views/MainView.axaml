@@ -26,7 +26,7 @@
 				</MenuItem>
 				<MenuItem Header="Создать">
 					<MenuItem Header="Создать объект" Command="{Binding CreateNodeCommand}" CommandParameter="{Binding #UserControl}"/>
-					<MenuItem Header="Создать связь"/>
+					<MenuItem Header="Создать связь" Command="{Binding CreateLinkCommand}" CommandParameter="{Binding #UserControl}"/>
 				</MenuItem>
 				<MenuItem Header="Очистить">
 					<MenuItem Header="Очистить объекты" Command="{Binding ClearNodesCommand}"/>

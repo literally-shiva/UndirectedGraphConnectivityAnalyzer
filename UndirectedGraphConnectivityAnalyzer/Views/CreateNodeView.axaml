@@ -15,7 +15,7 @@
 
 	<DockPanel Background="#23272a">
 		<Label DockPanel.Dock="Top" Margin="20 20 20 0" HorizontalAlignment="Center">Добавление объекта</Label>
-		<TextBox Name="NodeName" DockPanel.Dock="Top" Margin="20" Background="#2c2f33"></TextBox>
+		<TextBox Name="NodeName" DockPanel.Dock="Top" Margin="20" Background="#2c2f33"/>
 		<Button DockPanel.Dock="Top" Margin="20 0 20 20" HorizontalAlignment="Center" Background="#2c2f33" BorderBrush="Gray" Content="Добавить" Command="{Binding GetNodeNameCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 	</DockPanel>
 </UserControl>

@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="clr-namespace:UndirectedGraphConnectivityAnalyzer.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="384" d:DesignHeight="192"
+             x:Class="UndirectedGraphConnectivityAnalyzer.Views.CreateLinkView"
+			 x:DataType="vm:CreateLinkViewModel"
+			 Name="UserControl">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:CreateNodeViewModel />
+	</Design.DataContext>
+
+	<DockPanel Background="#23272a">
+		<Label DockPanel.Dock="Top" Margin="20 20 20 0" HorizontalAlignment="Center">Добавление связи</Label>
+		<Grid DockPanel.Dock="Top" ColumnDefinitions="5*, *, 5*">
+			<TextBox Grid.Column="0" Name="NodeName1" Margin="20 20 0 20" Background="#2c2f33"/>
+			<Label Grid.Column="1" Margin="0 20 0 20" HorizontalAlignment="Center">&lt;-&gt;</Label>
+			<TextBox Grid.Column="2" Name="NodeName2" Margin="0 20 20 20" Background="#2c2f33"/>
+		</Grid>
+		<Button DockPanel.Dock="Top" Margin="20 0 20 20" HorizontalAlignment="Center" Background="#2c2f33" BorderBrush="Gray" Content="Добавить" Command="{Binding GetNodeNamesCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+	</DockPanel>
+</UserControl>

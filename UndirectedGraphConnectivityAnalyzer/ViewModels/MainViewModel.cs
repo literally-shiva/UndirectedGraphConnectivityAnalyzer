@@ -24,7 +24,8 @@ public class MainViewModel : ViewModelBase
     public CombinedReactiveCommand<Unit, Unit> ClearNodesAndLinksCommand { get; }
     public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
     public ReactiveCommand<MainView, Unit> SaveDataCommand { get; }
-    public ReactiveCommand<MainView, Unit> CreateNodeCommand {  get; }
+    public ReactiveCommand<MainView, Unit> CreateNodeCommand { get; }
+    public ReactiveCommand<MainView, Unit> CreateLinkCommand { get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
 
@@ -40,6 +41,7 @@ public class MainViewModel : ViewModelBase
         AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
         SaveDataCommand = ReactiveCommand.CreateFromTask<MainView>(SaveData);
         CreateNodeCommand = ReactiveCommand.CreateFromTask<MainView>(CreateNode);
+        CreateLinkCommand = ReactiveCommand.CreateFromTask<MainView>(CreateLink);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
     }
@@ -255,6 +257,47 @@ public class MainViewModel : ViewModelBase
         var ownerWindow = mainView.GetVisualRoot();
         var window = new CreateNodeWindow() { DataContext = new CreateNodeViewModel() };
         var nodeName = await window.ShowDialog<string>((Window)ownerWindow);
-        Nodes.Add(new Node(Nodes.Count + 1, nodeName));
+        if (nodeName != null)
+        {
+            Node tempNode = new Node(Nodes.Count + 1, nodeName);
+
+            Node.UnbindNodes(Nodes);
+            Link.UnbindLinks(Links);
+
+            if (!Nodes.Any(node => node.Name == tempNode.Name))
+            {
+                Nodes.Add(tempNode);
+            }
+
+            Node.BindNodes(Nodes, Links);
+            Link.BindLinks(Nodes, Links);
+        }
+    }
+    public async Task CreateLink(MainView mainView)
+    {
+        var ownerWindow = mainView.GetVisualRoot();
+        var window = new CreateLinkWindow() { DataContext = new CreateLinkViewModel() };
+        var nodeNames = await window.ShowDialog<string[]>((Window)ownerWindow);
+        if (nodeNames != null)
+        {
+            Node leftNode = new Node(0, nodeNames[0]);
+            Node rightNode = new Node(0, nodeNames[1]);
+            Link tempLink = new Link(leftNode, rightNode, Links.Count + 1);
+
+            Node.UnbindNodes(Nodes);
+            Link.UnbindLinks(Links);
+
+            if (!Links.Any(link =>
+                link.Nodes[0].Name == tempLink.Nodes[0].Name &&
+                link.Nodes[1].Name == tempLink.Nodes[1].Name ||
+                link.Nodes[0].Name == tempLink.Nodes[1].Name &&
+                link.Nodes[1].Name == tempLink.Nodes[0].Name))
+            {
+                Links.Add(tempLink);
+            }
+
+            Node.BindNodes(Nodes, Links);
+            Link.BindLinks(Nodes, Links);
+        }
     }
 }

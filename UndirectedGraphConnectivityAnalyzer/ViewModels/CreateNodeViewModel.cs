@@ -19,7 +19,7 @@ namespace UndirectedGraphConnectivityAnalyzer.ViewModels
         {
             var vm = state as CreateNodeView;
             var window = (Window)vm.GetVisualRoot();
-            window.Close(vm.NodeName.Text);
+            window.Close(vm.NodeName.Text.Trim());
         }
     }
 }

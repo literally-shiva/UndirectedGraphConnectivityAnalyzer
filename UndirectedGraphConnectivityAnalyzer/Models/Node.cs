@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace UndirectedGraphConnectivityAnalyzer.Models
 {
@@ -36,8 +37,13 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
             {
                 for (var j = 0; j < links.Count; j++)
                 {
-                    if (nodes[i].Name == links[j].Nodes[0].Name ||
-                        nodes[i].Name == links[j].Nodes[1].Name)
+                    if ((nodes[i].Name == links[j].Nodes[0].Name ||
+                        nodes[i].Name == links[j].Nodes[1].Name) &&
+                        !nodes[i].Links.Any(link =>
+                            link.Nodes[0].Name == links[j].Nodes[0].Name &&
+                            link.Nodes[1].Name == links[j].Nodes[1].Name ||
+                            link.Nodes[0].Name == links[j].Nodes[1].Name &&
+                            link.Nodes[1].Name == links[j].Nodes[0].Name))
                     {
                         nodes[i].AddLink(links[j]);
                     }
