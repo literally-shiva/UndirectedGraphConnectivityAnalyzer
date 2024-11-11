@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
+using ClosedXML.Excel;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -28,6 +29,10 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<MainView, Unit> CreateLinkCommand { get; }
     public ObservableCollection<Node> Nodes { get; }
     public ObservableCollection<Link> Links { get; }
+    public static FilePickerFileType ExcelType { get; } = new("Excel")
+    {
+        Patterns = new[] { "*.xlsx" }
+    };
 
     public MainViewModel()
     {
@@ -225,30 +230,53 @@ public class MainViewModel : ViewModelBase
     {
         var topLevel = TopLevel.GetTopLevel(mainView);
 
-        var dir = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Сохранение данных",
             DefaultExtension = ".txt",
             SuggestedFileName = "Отчёт анализа связности",
-            FileTypeChoices = [FilePickerFileTypes.TextPlain],
+            FileTypeChoices = [FilePickerFileTypes.TextPlain, ExcelType, FilePickerFileTypes.All],
             ShowOverwritePrompt = true
         });
         // Возможно, в соответствии с MVVM, правильнее вынести эту логику в отдельный класс вроде "FileService"
-        if (dir != null)
+        if (file != null)
         {
-            await using var stream = await dir.OpenWriteAsync();
-            using var streamWriter = new StreamWriter(stream);
-
-            await streamWriter.WriteLineAsync("Объекты и их компоненты связности:");
-            foreach (var node in Nodes)
+            if (file.Name.EndsWith(".txt"))
             {
-                await streamWriter.WriteLineAsync($"{node.Name} : {node.ConnectivityComponent}");
+                await using var stream = await file.OpenWriteAsync();
+                using var streamWriter = new StreamWriter(stream);
+
+                await streamWriter.WriteLineAsync("Объекты и их компоненты связности:");
+                foreach (var node in Nodes)
+                {
+                    await streamWriter.WriteLineAsync($"{node.Name} : {node.ConnectivityComponent}");
+                }
+
+                await streamWriter.WriteLineAsync("\nСвязи и их компоненты связности:");
+                foreach (var link in Links)
+                {
+                    await streamWriter.WriteLineAsync($"{link.Nodes[0].Name}<->{link.Nodes[1].Name} : {link.ConnectivityComponent}");
+                }
             }
-
-            await streamWriter.WriteLineAsync("\nСвязи и их компоненты связности:");
-            foreach (var link in Links)
+            if(file.Name.EndsWith(".xlsx"))
             {
-                await streamWriter.WriteLineAsync($"{link.Nodes[0].Name}<->{link.Nodes[1].Name} : {link.ConnectivityComponent}");
+                using var workbook = new XLWorkbook();
+                var worksheet = workbook.AddWorksheet("Отчёт");
+
+                var nodes = from node in Nodes
+                            select new { node.Name, node.ConnectivityComponent };
+                var links = from link in Links
+                            select new { LeftLink = link.Nodes[0].Name, RightLink = link.Nodes[1].Name, link.ConnectivityComponent };
+
+                worksheet.Cell(1, 1).Value = "Объекты";
+                worksheet.Range(1, 1, 1, 2).Merge();
+                worksheet.Cell(2, 1).InsertData(nodes.AsEnumerable());
+
+                worksheet.Cell(1, 4).Value = "Связи";
+                worksheet.Range(1, 4, 1, 6).Merge();
+                worksheet.Cell(2, 4).InsertData(links.AsEnumerable());
+
+                workbook.SaveAs(file.Path.LocalPath);
             }
         }
     }
