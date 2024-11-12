@@ -2,7 +2,6 @@
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
