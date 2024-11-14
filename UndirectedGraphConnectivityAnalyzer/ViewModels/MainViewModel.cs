@@ -20,7 +20,7 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> AnalyzeConnectivityCommand { get; }
     public ReactiveCommand<MainView, Unit> SaveReportCommand { get; }
 
-    public  NodeManager MainNodeManager { get; }
+    public NodeManager MainNodeManager { get; }
     public LinkManager MainLinkManager { get; }
     public ReportManager MainReportManager { get; }
 
