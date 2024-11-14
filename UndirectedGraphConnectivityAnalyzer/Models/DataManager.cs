@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace UndirectedGraphConnectivityAnalyzer.Models
@@ -13,7 +14,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
         /// <summary>
         /// Определяет лист элементов, которыми будет управлять.
         /// </summary>
-        public List<T> Elements { get; set; } = new List<T>();
+        public ObservableCollection<T> Elements { get; set; } = new ObservableCollection<T>();
 
         /// <summary>
         /// Определяет Excel формат файлов.

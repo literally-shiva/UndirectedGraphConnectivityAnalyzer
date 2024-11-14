@@ -30,10 +30,10 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
 
                 switch (fileType)
                 {
-                    case "txt":
+                    case ".txt":
                         await LoadFromTxtAsync(files[0]);
                         break;
-                    case "xlsx":
+                    case ".xlsx":
                         LoadFromXlsx(files[0]);
                         break;
                 }
@@ -78,11 +78,11 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
 
                 switch (fileType)
                 {
-                    case "txt":
+                    case ".txt":
                         Elements.Clear();
                         await LoadFromTxtAsync(files[0]);
                         break;
-                    case "xlsx":
+                    case ".xlsx":
                         Elements.Clear();
                         LoadFromXlsx(files[0]);
                         break;

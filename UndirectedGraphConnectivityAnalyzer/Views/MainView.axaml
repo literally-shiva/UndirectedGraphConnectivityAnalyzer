@@ -44,7 +44,7 @@
 		<Label DockPanel.Dock="Top" Margin="10" FontSize="20">Объекты и связи</Label>
 		<Button DockPanel.Dock="Top" Margin="20 20 20 0" Background="#2c2f33" BorderBrush="Gray" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-			<DataGrid Margin="20" ItemsSource="{Binding Nodes} "
+			<DataGrid Margin="20" ItemsSource="{Binding MainNodeManager.Elements} "
 					  IsReadOnly="True"
 					  GridLinesVisibility="All"
 					  BorderThickness="1" BorderBrush="Gray"
@@ -60,7 +60,7 @@
 					<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
 				</DataGrid.Columns>
 			</DataGrid>
-			<DataGrid Margin="20" ItemsSource="{Binding Links}"
+			<DataGrid Margin="20" ItemsSource="{Binding MainLinkManager.Elements}"
 					  IsReadOnly="True"
 					  GridLinesVisibility="All"
 					  BorderThickness="1" BorderBrush="Gray"
