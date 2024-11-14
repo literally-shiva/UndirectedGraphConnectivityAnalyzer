@@ -1,51 +1,24 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using ClosedXML.Excel;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UndirectedGraphConnectivityAnalyzer.ViewModels;
+using UndirectedGraphConnectivityAnalyzer.Views;
 
 namespace UndirectedGraphConnectivityAnalyzer.Models
 {
-    internal class NodeManager : IDataManager
+    public class NodeManager : DataManager <Node>
     {
-        public static FilePickerFileType ExcelType { get; } = new("Excel")
+        public override async Task AddAsync(UserControl view)
         {
-            Patterns = new[] { "*.xlsx" }
-        };
-
-        public List<Node> Nodes { get; set; }
-        public UserControl View;
-
-        public NodeManager(UserControl view)
-        {
-            Nodes = new List<Node>();
-            View = view;
-        }
-
-        public async Task AddAsync()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Clear()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Create()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public async Task LoadAsync()
-        {
-            var topLevel = TopLevel.GetTopLevel(View);
-
+            var topLevel = TopLevel.GetTopLevel(view);
             var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Загрузка объектов",
+                Title = "Добавление объектов",
                 AllowMultiple = false,
                 FileTypeFilter = new[] { ExcelType, FilePickerFileTypes.TextPlain, FilePickerFileTypes.All }
             });
@@ -66,22 +39,93 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
             }
         }
 
+        public override async Task CreateAsync(UserControl view)
+        {
+            var ownerWindow = view.GetVisualRoot();
+            var window = new CreateNodeWindow() { DataContext = new CreateNodeViewModel() };
+            var nodeName = await window.ShowDialog<string>((Window)ownerWindow);
+            if (nodeName != null)
+            {
+                Node tempNode = new Node(Elements.Count + 1, nodeName);
+
+                if (!Elements.Any(node => node.Name == tempNode.Name))
+                {
+                    Elements.Add(tempNode);
+                }
+            }
+        }
+
+        public override async Task ReLoadAsync(UserControl view)
+        {
+            var topLevel = TopLevel.GetTopLevel(view);
+            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Загрузка объектов",
+                AllowMultiple = false,
+                FileTypeFilter = new[] { ExcelType, FilePickerFileTypes.TextPlain, FilePickerFileTypes.All }
+            });
+
+            if (files.Count >= 1)
+            {
+                var fileType = Path.GetExtension(files[0].Name);
+
+                switch (fileType)
+                {
+                    case "txt":
+                        Elements.Clear();
+                        await LoadFromTxtAsync(files[0]);
+                        break;
+                    case "xlsx":
+                        Elements.Clear();
+                        LoadFromXlsx(files[0]);
+                        break;
+                }
+            }
+        }
+
+        public void BindNodes(ObservableCollection<Link> links)
+        {
+            for (var i = 0; i < Elements.Count; i++)
+            {
+                for (var j = 0; j < links.Count; j++)
+                {
+                    if ((Elements[i].Name == links[j].Nodes[0].Name ||
+                        Elements[i].Name == links[j].Nodes[1].Name) &&
+                        !Elements[i].Links.Any(link =>
+                            link.Nodes[0].Name == links[j].Nodes[0].Name &&
+                            link.Nodes[1].Name == links[j].Nodes[1].Name ||
+                            link.Nodes[0].Name == links[j].Nodes[1].Name &&
+                            link.Nodes[1].Name == links[j].Nodes[0].Name))
+                    {
+                        Elements[i].AddLink(links[j]);
+                    }
+                }
+            }
+        }
+
+        public void UnbindNodes()
+        {
+            foreach (var node in Elements)
+            {
+                node.Links.Clear();
+                node.ConnectivityComponent = 0;
+            }
+        }
+
         public async Task LoadFromTxtAsync(IStorageFile file)
         {
             await using var stream = await file.OpenReadAsync();
             using var streamReader = new StreamReader(stream);
             string? line;
 
-            Nodes.Clear();
-
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
                 line = line.Trim();
-                var tempNode = new Node(Nodes.Count + 1, line);
+                var tempNode = new Node(Elements.Count + 1, line);
 
-                if (!Nodes.Any(node => node.Name == tempNode.Name))
+                if (!Elements.Any(node => node.Name == tempNode.Name))
                 {
-                    Nodes.Add(tempNode);
+                    Elements.Add(tempNode);
                 }
             }
         }
@@ -90,8 +134,6 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
         {
             using var workBook = new XLWorkbook(file.Path.LocalPath);
             IXLCells nodeHeaderCells;
-
-            Nodes.Clear();
 
             foreach (var worksheet in workBook.Worksheets)
             {
@@ -105,11 +147,11 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     while ((nodeName = nodeNameCell.GetValue<string>()) != "")
                     {
                         nodeName = nodeName.Trim();
-                        var tempNode = new Node(Nodes.Count + 1, nodeName);
+                        var tempNode = new Node(Elements.Count + 1, nodeName);
 
-                        if (!Nodes.Any(node => node.Name == tempNode.Name))
+                        if (!Elements.Any(node => node.Name == tempNode.Name))
                         {
-                            Nodes.Add(tempNode);
+                            Elements.Add(tempNode);
                         }
 
                         nodeNameCell = nodeNameCell.CellBelow();

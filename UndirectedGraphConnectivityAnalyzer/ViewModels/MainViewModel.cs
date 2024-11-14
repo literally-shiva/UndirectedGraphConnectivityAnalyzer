@@ -36,6 +36,7 @@ public class MainViewModel : ViewModelBase
     {
         Patterns = new[] { "*.xlsx" }
     };
+    public NodeManager MainNodeManager { get; }
 
     public MainViewModel()
     {
@@ -52,10 +53,15 @@ public class MainViewModel : ViewModelBase
         SaveReportCommand = ReactiveCommand.CreateFromTask<MainView>(SaveReport);
         Nodes = new ObservableCollection<Node>();
         Links = new ObservableCollection<Link>();
+        MainNodeManager = new NodeManager();
     }
 
     async Task LoadNodes(MainView mainView)
     {
+        //MainNodeManager.Clear();
+        //await MainNodeManager.ReLoadAsync(mainView);
+        //MainNodeManager.BindNodes(Links);
+
         var topLevel = TopLevel.GetTopLevel(mainView);
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions

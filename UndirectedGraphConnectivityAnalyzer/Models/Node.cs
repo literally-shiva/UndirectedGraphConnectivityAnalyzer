@@ -11,7 +11,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
-        List<Link> Links { get; set; }
+        public List<Link> Links { get; set; }
         public int ConnectivityComponent
         {
             get => _connectivityComponent;
