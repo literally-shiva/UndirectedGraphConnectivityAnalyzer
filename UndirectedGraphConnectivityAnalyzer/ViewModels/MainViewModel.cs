@@ -42,7 +42,7 @@ public class MainViewModel : ViewModelBase
         MainLinkManager = new LinkManager();
         MainReportManager = new ReportManager();
     }
-
+    // Логичнее убрать методы по связыванию и отвязыванию в модели
     async Task LoadNodes(MainView mainView)
     {
         MainLinkManager.UnbindLinks();
@@ -80,31 +80,34 @@ public class MainViewModel : ViewModelBase
         MainNodeManager.BindNodes(MainLinkManager.Elements);
         MainLinkManager.BindLinks(MainNodeManager.Elements);
     }
+
     public async Task CreateNode(MainView mainView)
     {
         MainNodeManager.UnbindNodes();
         MainLinkManager.UnbindLinks();
 
-        MainNodeManager.CreateAsync(mainView);
+        await MainNodeManager.CreateAsync(mainView);
 
         MainNodeManager.BindNodes(MainLinkManager.Elements);
         MainLinkManager.BindLinks(MainNodeManager.Elements);
     }
+
     public async Task CreateLink(MainView mainView)
     {
         MainNodeManager.UnbindNodes();
         MainLinkManager.UnbindLinks();
 
-        MainLinkManager.CreateAsync(mainView);
+        await MainLinkManager.CreateAsync(mainView);
 
         MainNodeManager.BindNodes(MainLinkManager.Elements);
         MainLinkManager.BindLinks(MainNodeManager.Elements);
     }
+    // Связи остаются привязаны (?)
     void ClearNodes()
     {
         MainNodeManager.Clear();
     }
-
+    // Узлы остаются привязаны (?)
     void ClearLinks()
     {
         MainLinkManager.Clear();

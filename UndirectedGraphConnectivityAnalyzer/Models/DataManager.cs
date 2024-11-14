@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
