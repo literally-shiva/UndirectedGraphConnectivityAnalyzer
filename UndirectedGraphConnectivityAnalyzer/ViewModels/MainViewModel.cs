@@ -42,11 +42,10 @@ public class MainViewModel : ViewModelBase
         MainLinkManager = new LinkManager();
         MainReportManager = new ReportManager();
     }
-    // Логичнее убрать методы по связыванию и отвязыванию в модели
+
     async Task LoadNodes(MainView mainView)
     {
         MainLinkManager.UnbindLinks();
-        MainNodeManager.Clear();
 
         await MainNodeManager.ReLoadAsync(mainView);
 
@@ -57,7 +56,6 @@ public class MainViewModel : ViewModelBase
     async Task LoadLinks(MainView mainView)
     {
         MainNodeManager.UnbindNodes();
-        MainLinkManager.Clear();
 
         await MainLinkManager.ReLoadAsync(mainView);
 
@@ -67,6 +65,9 @@ public class MainViewModel : ViewModelBase
 
     async Task AddNodes(MainView mainView)
     {
+        MainNodeManager.UnbindNodes();
+        MainLinkManager.UnbindLinks();
+
         await MainNodeManager.AddAsync(mainView);
 
         MainNodeManager.BindNodes(MainLinkManager.Elements);
@@ -75,7 +76,10 @@ public class MainViewModel : ViewModelBase
 
     async Task AddLinks(MainView mainView)
     {
-        await MainLinkManager.ReLoadAsync(mainView);
+        MainNodeManager.UnbindNodes();
+        MainLinkManager.UnbindLinks();
+
+        await MainLinkManager.AddAsync(mainView);
 
         MainNodeManager.BindNodes(MainLinkManager.Elements);
         MainLinkManager.BindLinks(MainNodeManager.Elements);
@@ -102,14 +106,16 @@ public class MainViewModel : ViewModelBase
         MainNodeManager.BindNodes(MainLinkManager.Elements);
         MainLinkManager.BindLinks(MainNodeManager.Elements);
     }
-    // Связи остаются привязаны (?)
+
     void ClearNodes()
     {
+        MainLinkManager.UnbindLinks();
         MainNodeManager.Clear();
     }
-    // Узлы остаются привязаны (?)
+
     void ClearLinks()
     {
+        MainNodeManager.UnbindNodes();
         MainLinkManager.Clear();
     }
     void AnalyzeConnectivity()
