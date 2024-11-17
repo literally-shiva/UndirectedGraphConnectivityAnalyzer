@@ -2,6 +2,7 @@
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ClosedXML.Excel;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -182,6 +183,60 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     break;
                 }
             }
+        }
+
+        public async override Task Save(UserControl view)
+        {
+            var topLevel = TopLevel.GetTopLevel(view);
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Сохранение связей",
+                DefaultExtension = ".xlsx",
+                SuggestedFileName = "Связи",
+                FileTypeChoices = [ExcelType, FilePickerFileTypes.TextPlain, FilePickerFileTypes.All],
+                ShowOverwritePrompt = true
+            });
+
+            if (file != null)
+            {
+                var fileType = Path.GetExtension(file.Name);
+
+                switch (fileType)
+                {
+                    case ".txt":
+                        await SaveToTxt(file);
+                        break;
+                    case ".xlsx":
+                        SaveToXlsx(file);
+                        break;
+                }
+            }
+        }
+
+        private async Task SaveToTxt(IStorageFile file)
+        {
+            await using var stream = await file.OpenWriteAsync();
+            using var streamWriter = new StreamWriter(stream);
+
+            foreach (var link in Elements)
+            {
+                await streamWriter.WriteLineAsync($"{link.Nodes[0].Name}<->{link.Nodes[1].Name}");
+            }
+        }
+
+        private void SaveToXlsx(IStorageFile file)
+        {
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.AddWorksheet("Связи");
+
+            var reportLinks = from link in Elements select new { LeftLink = link.Nodes[0].Name, RightLink = link.Nodes[1].Name };
+
+            worksheet.Cell(1, 1).Value = "Связи";
+            worksheet.Range(1, 1, 1, 2).Merge();
+            worksheet.Cell(2, 1).InsertData(reportLinks.AsEnumerable());
+
+            workbook.SaveAs(file.Path.LocalPath);
         }
     }
 }

@@ -2,6 +2,8 @@
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -159,6 +161,59 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     break;
                 }
             }
+        }
+
+        public override async Task Save(UserControl view)
+        {
+            var topLevel = TopLevel.GetTopLevel(view);
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Сохранение объектов",
+                DefaultExtension = ".xlsx",
+                SuggestedFileName = "Объекты",
+                FileTypeChoices = [ExcelType, FilePickerFileTypes.TextPlain, FilePickerFileTypes.All],
+                ShowOverwritePrompt = true
+            });
+
+            if (file != null)
+            {
+                var fileType = Path.GetExtension(file.Name);
+
+                switch (fileType)
+                {
+                    case ".txt":
+                        await SaveToTxt(file);
+                        break;
+                    case ".xlsx":
+                        SaveToXlsx(file);
+                        break;
+                }
+            }
+        }
+
+        private async Task SaveToTxt(IStorageFile file)
+        {
+            await using var stream = await file.OpenWriteAsync();
+            using var streamWriter = new StreamWriter(stream);
+
+            foreach (var node in Elements)
+            {
+                await streamWriter.WriteLineAsync(node.Name);
+            }
+        }
+
+        private void SaveToXlsx(IStorageFile file)
+        {
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.AddWorksheet("Объекты");
+
+            var nodes = from node in Elements select new { node.Name };
+
+            worksheet.Cell(1, 1).Value = "Объекты";
+            worksheet.Cell(2, 1).InsertData(nodes.AsEnumerable());
+
+            workbook.SaveAs(file.Path.LocalPath);
         }
     }
 }

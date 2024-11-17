@@ -28,6 +28,10 @@
 					<MenuItem Header="Создать объект" Command="{Binding CreateNodeCommand}" CommandParameter="{Binding #UserControl}"/>
 					<MenuItem Header="Создать связь" Command="{Binding CreateLinkCommand}" CommandParameter="{Binding #UserControl}"/>
 				</MenuItem>
+				<MenuItem Header="Сохранить">
+					<MenuItem Header="Сохранить объекты" Command="{Binding SaveNodesCommand}" CommandParameter="{Binding #UserControl}"/>
+					<MenuItem Header="Сохранить связи" Command="{Binding SaveLinksCommand}" CommandParameter="{Binding #UserControl}"/>
+				</MenuItem>
 				<MenuItem Header="Очистить">
 					<MenuItem Header="Очистить объекты" Command="{Binding ClearNodesCommand}"/>
 					<MenuItem Header="Очистить связи" Command="{Binding ClearLinksCommand}"/>

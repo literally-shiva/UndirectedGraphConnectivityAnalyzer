@@ -39,6 +39,11 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
         public abstract Task CreateAsync(UserControl view);
 
         /// <summary>
+        /// Сохраняет данные.
+        /// </summary>
+        public abstract Task Save(UserControl view);
+
+        /// <summary>
         /// Очищает данные.
         /// </summary>
         public void Clear()

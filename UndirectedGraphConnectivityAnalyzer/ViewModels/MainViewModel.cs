@@ -14,6 +14,8 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<MainView, Unit> AddLinksCommand { get; }
     public ReactiveCommand<MainView, Unit> CreateNodeCommand { get; }
     public ReactiveCommand<MainView, Unit> CreateLinkCommand { get; }
+    public ReactiveCommand<MainView, Unit> SaveNodesCommand { get; }
+    public ReactiveCommand<MainView, Unit> SaveLinksCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearNodesCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearLinksCommand { get; }
     public CombinedReactiveCommand<Unit, Unit> ClearNodesAndLinksCommand { get; }
@@ -32,6 +34,8 @@ public class MainViewModel : ViewModelBase
         AddLinksCommand = ReactiveCommand.CreateFromTask<MainView>(AddLinks);
         CreateNodeCommand = ReactiveCommand.CreateFromTask<MainView>(CreateNode);
         CreateLinkCommand = ReactiveCommand.CreateFromTask<MainView>(CreateLink);
+        SaveNodesCommand = ReactiveCommand.CreateFromTask<MainView>(SaveNodes);
+        SaveLinksCommand = ReactiveCommand.CreateFromTask<MainView>(SaveLinks);
         ClearNodesCommand = ReactiveCommand.Create(ClearNodes);
         ClearLinksCommand = ReactiveCommand.Create(ClearLinks);
         ClearNodesAndLinksCommand = ReactiveCommand.CreateCombined(new ReactiveCommand<Unit, Unit>[] { ClearNodesCommand, ClearLinksCommand });
@@ -94,6 +98,16 @@ public class MainViewModel : ViewModelBase
 
         MainNodeManager.BindNodes(MainLinkManager.Elements);
         MainLinkManager.BindLinks(MainNodeManager.Elements);
+    }
+
+    public async Task SaveNodes(MainView mainView)
+    {
+        await MainNodeManager.Save(mainView);
+    }
+
+    public async Task SaveLinks(MainView mainView)
+    {
+        await MainLinkManager.Save(mainView);
     }
 
     public async Task CreateLink(MainView mainView)
