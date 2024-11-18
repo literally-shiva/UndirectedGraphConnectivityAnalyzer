@@ -2,9 +2,9 @@
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -122,12 +122,19 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
-                line = line.Trim();
-                var tempNode = new Node(Elements.Count + 1, line);
-
-                if (!Elements.Any(node => node.Name == tempNode.Name))
+                if (line != "")
                 {
-                    Elements.Add(tempNode);
+                    line = line.Trim();
+                    var tempNode = new Node(Elements.Count + 1, line);
+
+                    if (!Elements.Any(node => node.Name == tempNode.Name))
+                    {
+                        Elements.Add(tempNode);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Обнаружена пустая строка в файле с объектами.");
                 }
             }
         }

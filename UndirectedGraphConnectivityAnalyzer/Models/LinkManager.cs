@@ -125,22 +125,29 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                 var linkString = line.Split("<->");
                 try
                 {
-                    var leftNode = new Node(0, linkString[0].Trim());
-                    var rightNode = new Node(0, linkString[1].Trim());
-                    var tempLink = new Link(leftNode, rightNode, Elements.Count + 1);
-
-                    if (!Elements.Any(link =>
-                        link.Nodes[0].Name == tempLink.Nodes[0].Name &&
-                        link.Nodes[1].Name == tempLink.Nodes[1].Name ||
-                        link.Nodes[0].Name == tempLink.Nodes[1].Name &&
-                        link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                    if (linkString[1] != "" && linkString[0] != "")
                     {
-                        Elements.Add(tempLink);
+                        var leftNode = new Node(0, linkString[0].Trim());
+                        var rightNode = new Node(0, linkString[1].Trim());
+                        var tempLink = new Link(leftNode, rightNode, Elements.Count + 1);
+
+                        if (!Elements.Any(link =>
+                            link.Nodes[0].Name == tempLink.Nodes[0].Name &&
+                            link.Nodes[1].Name == tempLink.Nodes[1].Name ||
+                            link.Nodes[0].Name == tempLink.Nodes[1].Name &&
+                            link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                        {
+                            Elements.Add(tempLink);
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Обнаружена строка, с пустым именем объекта, в файле со связями.");
                     }
                 }
                 catch
                 {
-                    Debug.WriteLine("Не удалось прочитать связь из файла");
+                    Debug.WriteLine("Обнаружена строка, не являющаяся связью, в файле со связями.");
                 }
             }
         }
@@ -158,27 +165,37 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     var nodeNameCellLeft = nodeHeaderCells.First().CellBelow();
                     var nodeNameCellRight = nodeNameCellLeft.CellRight();
 
-                    string? nodeLeftName;
-                    string? nodeRightName;
+                    string? nodeLeftName = nodeNameCellLeft.GetValue<string>();
+                    string? nodeRightName = nodeNameCellRight.GetValue<string>();
 
-                    while ((nodeLeftName = nodeNameCellLeft.GetValue<string>()) != "" &&
-                        (nodeRightName = nodeNameCellRight.GetValue<string>()) != "")
+                    while ((nodeLeftName != "") | (nodeRightName != ""))
                     {
-                        var leftNode = new Node(0, nodeLeftName.Trim());
-                        var rightNode = new Node(0, nodeRightName.Trim());
-
-                        var tempLink = new Link(leftNode, rightNode, Elements.Count + 1);
-
-                        if (!Elements.Any(link =>
-                            link.Nodes[0].Name == tempLink.Nodes[0].Name &&
-                            link.Nodes[1].Name == tempLink.Nodes[1].Name ||
-                            link.Nodes[0].Name == tempLink.Nodes[1].Name &&
-                            link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                        if (nodeLeftName != "" && nodeRightName != "")
                         {
-                            Elements.Add(tempLink);
+                            var leftNode = new Node(0, nodeLeftName.Trim());
+                            var rightNode = new Node(0, nodeRightName.Trim());
+
+                            var tempLink = new Link(leftNode, rightNode, Elements.Count + 1);
+
+                            if (!Elements.Any(link =>
+                                link.Nodes[0].Name == tempLink.Nodes[0].Name &&
+                                link.Nodes[1].Name == tempLink.Nodes[1].Name ||
+                                link.Nodes[0].Name == tempLink.Nodes[1].Name &&
+                                link.Nodes[1].Name == tempLink.Nodes[0].Name))
+                            {
+                                Elements.Add(tempLink);
+                            }
                         }
+                        else
+                        {
+                            Debug.WriteLine("Обнаружена строка, с пустым именем объекта, в файле со связями.");
+                        }
+
                         nodeNameCellLeft = nodeNameCellLeft.CellBelow();
                         nodeNameCellRight = nodeNameCellLeft.CellRight();
+
+                        nodeLeftName = nodeNameCellLeft.GetValue<string>();
+                        nodeRightName = nodeNameCellRight.GetValue<string>();
                     }
                     break;
                 }
