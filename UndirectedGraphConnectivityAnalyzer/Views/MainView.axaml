@@ -41,9 +41,6 @@
 			<MenuItem Header="Отчёт">
 				<MenuItem Header="Сохранить данные в файл" Command="{Binding SaveReportCommand}" CommandParameter="{Binding #UserControl}"/>
 			</MenuItem>
-			<MenuItem Header="Справка">
-				<MenuItem Header="Об авторе"/>
-			</MenuItem>
 		</Menu>
 		<Label DockPanel.Dock="Top" Margin="10" FontSize="20">Объекты и связи</Label>
 		<Button DockPanel.Dock="Top" Margin="20 20 20 0" Background="#2c2f33" BorderBrush="Gray" Command="{Binding AnalyzeConnectivityCommand}">Проанализировать связность</Button>

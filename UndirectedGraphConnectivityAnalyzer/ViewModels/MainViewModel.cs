@@ -6,6 +6,8 @@ using System.Reactive;
 using System.Threading.Tasks;
 using UndirectedGraphConnectivityAnalyzer.Models;
 using UndirectedGraphConnectivityAnalyzer.Views;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 
 namespace UndirectedGraphConnectivityAnalyzer.ViewModels;
 
@@ -43,7 +45,7 @@ public class MainViewModel : ViewModelBase
         ClearNodesCommand = ReactiveCommand.Create(ClearNodes);
         ClearLinksCommand = ReactiveCommand.Create(ClearLinks);
         ClearNodesAndLinksCommand = ReactiveCommand.CreateCombined(new ReactiveCommand<Unit, Unit>[] { ClearNodesCommand, ClearLinksCommand });
-        AnalyzeConnectivityCommand = ReactiveCommand.Create(AnalyzeConnectivity);
+        AnalyzeConnectivityCommand = ReactiveCommand.CreateFromTask(AnalyzeConnectivityAsync);
         SaveReportCommand = ReactiveCommand.CreateFromTask<MainView>(SaveReport);
 
         MainNodeManager = new NodeManager();
@@ -151,8 +153,18 @@ public class MainViewModel : ViewModelBase
         MainNodeManager.UnbindNodes();
         MainLinkManager.Clear();
     }
-    void AnalyzeConnectivity()
+    async Task AnalyzeConnectivityAsync()
     {
+        if (MainNodeManager.Elements.Count < 1 || MainLinkManager.Elements.Count < 1)
+        {
+            var box = MessageBoxManager
+                .GetMessageBoxStandard("Ошибка", "Отсутствуют объекты или связи",
+                ButtonEnum.Ok);
+
+            var result = await box.ShowAsync();
+            return;
+        }
+
         MainNodeManager.UnbindNodes();
         MainNodeManager.BindNodes(MainLinkManager.Elements);
         var listOfComponents = Node.GetConnectedComponents(MainNodeManager.Elements);

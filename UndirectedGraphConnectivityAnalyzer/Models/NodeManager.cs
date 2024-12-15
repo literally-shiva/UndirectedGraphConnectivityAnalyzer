@@ -2,6 +2,8 @@
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ClosedXML.Excel;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -53,6 +55,15 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                 if (!Elements.Any(node => node.Name == tempNode.Name))
                 {
                     Elements.Add(tempNode);
+                }
+                else
+                {
+                    var box = MessageBoxManager
+                        .GetMessageBoxStandard("Ошибка", "Создаваемый объект уже существует",
+                        ButtonEnum.Ok);
+
+                    var result = await box.ShowAsync();
+                    return;
                 }
             }
         }
@@ -119,6 +130,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
             await using var stream = await file.OpenReadAsync();
             using var streamReader = new StreamReader(stream);
             string? line;
+            int lineNum = 1;
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
@@ -135,8 +147,14 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                 }
                 else
                 {
-                    Debug.WriteLine("Обнаружена пустая строка в файле с объектами.");
+                    var box = MessageBoxManager
+                        .GetMessageBoxStandard("Ошибка", $"Обнаружена пустая строка в файле с объектами (строка №{lineNum}).",
+                        ButtonEnum.Ok);
+
+                    var result = await box.ShowAsync();
                 }
+
+                lineNum++;
             }
         }
 

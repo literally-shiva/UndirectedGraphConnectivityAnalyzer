@@ -2,6 +2,8 @@
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using ClosedXML.Excel;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -35,7 +37,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         await LoadFromTxtAsync(files[0]);
                         break;
                     case ".xlsx":
-                        LoadFromXlsx(files[0]);
+                        LoadFromXlsxAsync(files[0]);
                         break;
                 }
             }
@@ -59,6 +61,15 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     link.Nodes[1].Name == tempLink.Nodes[0].Name))
                 {
                     Elements.Add(tempLink);
+                }
+                else
+                {
+                    var box = MessageBoxManager
+                        .GetMessageBoxStandard("Ошибка", "Создаваемая связь уже существует",
+                        ButtonEnum.Ok);
+
+                    var result = await box.ShowAsync();
+                    return;
                 }
             }
         }
@@ -85,7 +96,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         break;
                     case ".xlsx":
                         Elements.Clear();
-                        LoadFromXlsx(files[0]);
+                        LoadFromXlsxAsync(files[0]);
                         break;
                 }
             }
@@ -119,6 +130,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
             await using var stream = await file.OpenReadAsync();
             using var streamReader = new StreamReader(stream);
             string? line;
+            int lineNum = 1;
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
@@ -145,17 +157,27 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     }
                     else
                     {
-                        Debug.WriteLine("Обнаружена строка, с пустым именем объекта, в файле со связями.");
+                        var box = MessageBoxManager
+                            .GetMessageBoxStandard("Ошибка", $"Обнаружена строка, с пустым именем объекта, в файле со связями (строка №{lineNum}).",
+                            ButtonEnum.Ok);
+
+                        var result = await box.ShowAsync();
                     }
                 }
                 catch
                 {
-                    Debug.WriteLine("Обнаружена строка, не являющаяся связью, в файле со связями.");
+                    var box = MessageBoxManager
+                        .GetMessageBoxStandard("Ошибка", $"Обнаружена строка, не являющаяся связью, в файле со связями (строка №{lineNum}).",
+                        ButtonEnum.Ok);
+
+                    var result = await box.ShowAsync();
                 }
+
+                lineNum++;
             }
         }
 
-        public void LoadFromXlsx(IStorageFile file)
+        public async Task LoadFromXlsxAsync(IStorageFile file)
         {
             using var wbook = new XLWorkbook(file.Path.LocalPath);
             IXLCells nodeHeaderCells;
@@ -192,6 +214,11 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         else
                         {
                             Debug.WriteLine("Обнаружена строка, с пустым именем объекта, в файле со связями.");
+                            var box = MessageBoxManager
+                                .GetMessageBoxStandard("Ошибка", $"Обнаружена строка, не являющаяся связью, в файле со связями (строка №{nodeNameCellLeft.Address.RowNumber}).",
+                                ButtonEnum.Ok);
+
+                            var result = await box.ShowAsync();
                         }
 
                         nodeNameCellLeft = nodeNameCellLeft.CellBelow();

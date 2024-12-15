@@ -1,8 +1,11 @@
 ﻿using Avalonia.Controls;
 using Avalonia.VisualTree;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia;
 using ReactiveUI;
 using System.Reactive;
 using UndirectedGraphConnectivityAnalyzer.Views;
+using System.Threading.Tasks;
 
 namespace UndirectedGraphConnectivityAnalyzer.ViewModels
 {
@@ -12,14 +15,26 @@ namespace UndirectedGraphConnectivityAnalyzer.ViewModels
 
         public CreateNodeViewModel()
         {
-            GetNodeNameCommand = ReactiveCommand.Create<object>(GetNodeName);
+            GetNodeNameCommand = ReactiveCommand.CreateFromTask<object>(GetNodeNameAsync);
         }
 
-        void GetNodeName(object state)
+        async Task GetNodeNameAsync(object state)
         {
             var vm = state as CreateNodeView;
-            var window = (Window)vm.GetVisualRoot();
-            window.Close(vm.NodeName.Text.Trim());
+            try
+            {
+                var window = (Window)vm.GetVisualRoot();
+                window.Close(vm.NodeName.Text.Trim());
+            }
+            catch
+            {
+                var box = MessageBoxManager.
+                    GetMessageBoxStandard("Ошибка", "Отсутствуют имя объекта",
+                        ButtonEnum.Ok);
+
+                var result = await box.ShowAsync();
+                return;
+            }
         }
     }
 }
