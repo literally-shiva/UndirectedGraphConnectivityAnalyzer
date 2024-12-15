@@ -37,7 +37,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         await LoadFromTxtAsync(files[0]);
                         break;
                     case ".xlsx":
-                        LoadFromXlsx(files[0]);
+                        LoadFromXlsxAsync(files[0]);
                         break;
                 }
             }
@@ -90,7 +90,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         break;
                     case ".xlsx":
                         Elements.Clear();
-                        LoadFromXlsx(files[0]);
+                        LoadFromXlsxAsync(files[0]);
                         break;
                 }
             }
@@ -144,6 +144,14 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     {
                         Elements.Add(tempNode);
                     }
+                    else
+                    {
+                        var box = MessageBoxManager
+                            .GetMessageBoxStandard("Ошибка", $"Создаваемый объект уже существует (строка №{lineNum}).",
+                            ButtonEnum.Ok);
+
+                        var result = await box.ShowAsync();
+                    }
                 }
                 else
                 {
@@ -158,7 +166,7 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
             }
         }
 
-        public void LoadFromXlsx(IStorageFile file)
+        public async Task LoadFromXlsxAsync(IStorageFile file)
         {
             using var workBook = new XLWorkbook(file.Path.LocalPath);
             IXLCells nodeHeaderCells;
@@ -179,6 +187,14 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         if (!Elements.Any(node => node.Name == tempNode.Name))
                         {
                             Elements.Add(tempNode);
+                        }
+                        else
+                        {
+                            var box = MessageBoxManager
+                                .GetMessageBoxStandard("Ошибка", $"Создаваемый объект уже существует (строка №{nodeNameCell.Address.RowNumber}).",
+                                ButtonEnum.Ok);
+
+                            var result = await box.ShowAsync();
                         }
 
                         nodeNameCell = nodeNameCell.CellBelow();

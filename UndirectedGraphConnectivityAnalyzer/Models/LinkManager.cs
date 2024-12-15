@@ -154,6 +154,14 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                         {
                             Elements.Add(tempLink);
                         }
+                        else
+                        {
+                            var box = MessageBoxManager
+                                .GetMessageBoxStandard("Ошибка", $"Создаваемая связь уже существует (строка №{lineNum}).",
+                                ButtonEnum.Ok);
+
+                            var result = await box.ShowAsync();
+                        }
                     }
                     else
                     {
@@ -209,6 +217,14 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                                 link.Nodes[1].Name == tempLink.Nodes[0].Name))
                             {
                                 Elements.Add(tempLink);
+                            }
+                            else
+                            {
+                                var box = MessageBoxManager
+                                    .GetMessageBoxStandard("Ошибка", $"Создаваемая связь уже существует (строка №{nodeNameCellLeft.Address.RowNumber}).",
+                                    ButtonEnum.Ok);
+
+                                var result = await box.ShowAsync();
                             }
                         }
                         else
