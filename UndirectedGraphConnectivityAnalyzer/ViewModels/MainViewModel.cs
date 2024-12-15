@@ -153,6 +153,8 @@ public class MainViewModel : ViewModelBase
     }
     void AnalyzeConnectivity()
     {
+        MainNodeManager.UnbindNodes();
+        MainNodeManager.BindNodes(MainLinkManager.Elements);
         var listOfComponents = Node.GetConnectedComponents(MainNodeManager.Elements);
 
         Components.Clear();
