@@ -122,9 +122,10 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
 
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
+                line = line.Trim();
+
                 if (line != "")
                 {
-                    line = line.Trim();
                     var tempNode = new Node(Elements.Count + 1, line);
 
                     if (!Elements.Any(node => node.Name == tempNode.Name))
@@ -153,9 +154,8 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     var nodeNameCell = nodeHeaderCells.First().CellBelow();
                     string? nodeName;
 
-                    while ((nodeName = nodeNameCell.GetValue<string>()) != "")
+                    while ((nodeName = nodeNameCell.GetValue<string>().Trim()) != "")
                     {
-                        nodeName = nodeName.Trim();
                         var tempNode = new Node(Elements.Count + 1, nodeName);
 
                         if (!Elements.Any(node => node.Name == tempNode.Name))

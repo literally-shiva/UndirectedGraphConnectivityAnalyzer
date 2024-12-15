@@ -125,10 +125,13 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                 var linkString = line.Split("<->");
                 try
                 {
+                    linkString[1] = linkString[1].Trim();
+                    linkString[0] = linkString[0].Trim();
+
                     if (linkString[1] != "" && linkString[0] != "")
                     {
-                        var leftNode = new Node(0, linkString[0].Trim());
-                        var rightNode = new Node(0, linkString[1].Trim());
+                        var leftNode = new Node(0, linkString[0]);
+                        var rightNode = new Node(0, linkString[1]);
                         var tempLink = new Link(leftNode, rightNode, Elements.Count + 1);
 
                         if (!Elements.Any(link =>
@@ -165,15 +168,15 @@ namespace UndirectedGraphConnectivityAnalyzer.Models
                     var nodeNameCellLeft = nodeHeaderCells.First().CellBelow();
                     var nodeNameCellRight = nodeNameCellLeft.CellRight();
 
-                    string? nodeLeftName = nodeNameCellLeft.GetValue<string>();
-                    string? nodeRightName = nodeNameCellRight.GetValue<string>();
+                    string? nodeLeftName = nodeNameCellLeft.GetValue<string>().Trim();
+                    string? nodeRightName = nodeNameCellRight.GetValue<string>().Trim();
 
                     while ((nodeLeftName != "") | (nodeRightName != ""))
                     {
                         if (nodeLeftName != "" && nodeRightName != "")
                         {
-                            var leftNode = new Node(0, nodeLeftName.Trim());
-                            var rightNode = new Node(0, nodeRightName.Trim());
+                            var leftNode = new Node(0, nodeLeftName);
+                            var rightNode = new Node(0, nodeRightName);
 
                             var tempLink = new Link(leftNode, rightNode, Elements.Count + 1);
 
