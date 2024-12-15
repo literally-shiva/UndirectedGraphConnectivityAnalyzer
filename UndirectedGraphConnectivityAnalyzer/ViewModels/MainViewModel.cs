@@ -1,4 +1,7 @@
 ﻿using ReactiveUI;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using UndirectedGraphConnectivityAnalyzer.Models;
@@ -23,6 +26,7 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<MainView, Unit> SaveReportCommand { get; }
 
     public NodeManager MainNodeManager { get; }
+    public ObservableCollection<ComponentRecord> Components { get; set; }
     public LinkManager MainLinkManager { get; }
     public ReportManager MainReportManager { get; }
 
@@ -43,12 +47,15 @@ public class MainViewModel : ViewModelBase
         SaveReportCommand = ReactiveCommand.CreateFromTask<MainView>(SaveReport);
 
         MainNodeManager = new NodeManager();
+        Components = new ObservableCollection<ComponentRecord>();
         MainLinkManager = new LinkManager();
         MainReportManager = new ReportManager();
     }
 
     async Task LoadNodes(MainView mainView)
     {
+        Components.Clear();
+
         MainLinkManager.UnbindLinks();
 
         await MainNodeManager.ReLoadAsync(mainView);
@@ -59,6 +66,8 @@ public class MainViewModel : ViewModelBase
 
     async Task LoadLinks(MainView mainView)
     {
+        Components.Clear();
+
         MainNodeManager.UnbindNodes();
 
         await MainLinkManager.ReLoadAsync(mainView);
@@ -69,6 +78,8 @@ public class MainViewModel : ViewModelBase
 
     async Task AddNodes(MainView mainView)
     {
+        Components.Clear();
+
         MainNodeManager.UnbindNodes();
         MainLinkManager.UnbindLinks();
 
@@ -80,6 +91,8 @@ public class MainViewModel : ViewModelBase
 
     async Task AddLinks(MainView mainView)
     {
+        Components.Clear();
+
         MainNodeManager.UnbindNodes();
         MainLinkManager.UnbindLinks();
 
@@ -91,6 +104,8 @@ public class MainViewModel : ViewModelBase
 
     public async Task CreateNode(MainView mainView)
     {
+        Components.Clear();
+
         MainNodeManager.UnbindNodes();
         MainLinkManager.UnbindLinks();
 
@@ -112,6 +127,8 @@ public class MainViewModel : ViewModelBase
 
     public async Task CreateLink(MainView mainView)
     {
+        Components.Clear();
+
         MainNodeManager.UnbindNodes();
         MainLinkManager.UnbindLinks();
 
@@ -123,22 +140,37 @@ public class MainViewModel : ViewModelBase
 
     void ClearNodes()
     {
+        Components.Clear();
         MainLinkManager.UnbindLinks();
         MainNodeManager.Clear();
     }
 
     void ClearLinks()
     {
+        Components.Clear();
         MainNodeManager.UnbindNodes();
         MainLinkManager.Clear();
     }
     void AnalyzeConnectivity()
     {
-        Node.GetConnectedComponents(MainNodeManager.Elements);
+        var listOfComponents = Node.GetConnectedComponents(MainNodeManager.Elements);
+
+        Components.Clear();
+        foreach (var component in listOfComponents)
+        {
+            var componentRecord = new ComponentRecord() { ComponentNumber = component.First().ConnectivityComponent, Count = component.Count};
+            Components.Add(componentRecord);
+        }
     }
 
     async Task SaveReport(MainView mainView)
     {
         await MainReportManager.SaveReportAsync(mainView, MainNodeManager.Elements, MainLinkManager.Elements);
+    }
+
+    public class ComponentRecord
+    {
+        public int ComponentNumber { get; set; }
+        public int Count { get; set; }
     }
 }

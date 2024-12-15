@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:UndirectedGraphConnectivityAnalyzer.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="576"
+             mc:Ignorable="d" d:DesignWidth="1632" d:DesignHeight="576"
              x:Class="UndirectedGraphConnectivityAnalyzer.Views.MainView"
              x:DataType="vm:MainViewModel"
 			 Name="UserControl">
@@ -89,6 +89,21 @@
 						</DataGridTextColumn.Binding>
 					</DataGridTextColumn>
 					<DataGridTextColumn Header="Компонента" Binding="{Binding ConnectivityComponent}"/>
+				</DataGrid.Columns>
+			</DataGrid>
+			<DataGrid Margin="20" ItemsSource="{Binding Components} "
+					  IsReadOnly="True"
+					  GridLinesVisibility="All"
+					  BorderThickness="1" BorderBrush="Gray"
+					  Background="#2c2f33">
+				<DataGrid.Styles>
+					<Style Selector="DataGridColumnHeader">
+						<Setter Property="Background" Value="#282b30" />
+					</Style>
+				</DataGrid.Styles>
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Компонента" Binding="{Binding ComponentNumber}"/>
+					<DataGridTextColumn Header="Количество объектов" Binding="{Binding Count}"/>
 				</DataGrid.Columns>
 			</DataGrid>
 		</StackPanel>
